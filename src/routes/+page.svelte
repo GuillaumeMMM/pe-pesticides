@@ -75,6 +75,7 @@
 	};
 
 	const render = () => {
+		console.log(chartRect);
 		d3.select(chartEl).selectAll('*').remove();
 
 		const projection = geoBertin1953().fitExtent(
@@ -389,6 +390,7 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
+		height: 100vh;
 
 		.chart {
 			flex: 1;
@@ -431,6 +433,12 @@
 			width: 100vw;
 			height: 100vh;
 			background-color: rgba(0, 0, 0, 0.222);
+		}
+	}
+
+	@media (max-width: 700px) {
+		.download-data {
+			display: none;
 		}
 	}
 
