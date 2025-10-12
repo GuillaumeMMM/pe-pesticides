@@ -36,7 +36,7 @@
 	}
 
 	.container {
-		min-height: 100vh;
+		min-height: 100dvh;
 		background: #cccccc;
 		background: linear-gradient(218deg, rgba(204, 204, 204, 1) 0%, rgb(205, 205, 205) 100%);
 		display: flex;

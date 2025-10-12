@@ -390,7 +390,7 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
-		height: 100vh;
+		height: 100dvh;
 
 		.chart {
 			flex: 1;
@@ -431,7 +431,7 @@
 			left: 0;
 			top: 0;
 			width: 100vw;
-			height: 100vh;
+			height: 100dvh;
 			background-color: rgba(0, 0, 0, 0.222);
 		}
 	}

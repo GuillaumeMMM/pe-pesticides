@@ -222,7 +222,7 @@
 	.container {
 		width: 800px;
 		max-width: 100%;
-		height: 100vh;
+		height: 100dvh;
 		margin-left: auto;
 		padding: 10px;
 	}
@@ -230,7 +230,7 @@
 	.panel {
 		background-color: white;
 		height: 100%;
-		max-height: calc(100vh - 2rem);
+		max-height: calc(100dvh - 2rem);
 		overflow-y: auto;
 		position: relative;
 		padding: 1rem;
