@@ -324,7 +324,9 @@
 	};
 
 	onMount(() => {
-		render();
+		setTimeout(() => {
+			render();
+		});
 	});
 </script>
 
