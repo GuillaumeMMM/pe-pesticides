@@ -152,9 +152,9 @@
 						<tr>
 							<th>Export company</th>
 							{#if type === 'import'}
-								<th>Company's country</th>
+								<th>Company's home country</th>
 							{/if}
-							<th>Quantity in tons</th>
+							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tons</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -179,7 +179,7 @@
 					<thead>
 						<tr>
 							<th>Chemical name</th>
-							<th>Quantity in tons</th>
+							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tons</th>
 						</tr>
 					</thead>
 					<tbody>
