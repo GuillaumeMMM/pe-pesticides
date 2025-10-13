@@ -75,7 +75,16 @@
 	};
 
 	const render = () => {
-		console.log(chartRect);
+		console.log('render');
+		if (!chartRect?.width || !chartRect?.height) {
+			console.log('no width or height');
+			setTimeout(() => {
+				chartRect = chartEl?.getBoundingClientRect();
+				console.log('re-compute', chartEl?.getBoundingClientRect());
+				render();
+			}, 100);
+			return;
+		}
 		d3.select(chartEl).selectAll('*').remove();
 
 		const projection = geoBertin1953().fitExtent(
@@ -325,9 +334,7 @@
 	};
 
 	onMount(() => {
-		setTimeout(() => {
-			render();
-		});
+		render();
 	});
 </script>
 
