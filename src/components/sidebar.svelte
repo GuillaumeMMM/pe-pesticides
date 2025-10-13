@@ -21,6 +21,12 @@
 		lines[0]?.[type === 'import' ? 'import_country' : 'export_country'].brk_name
 	);
 
+	const countriesWithThe = ['USA', 'GBR', 'ARE', 'NLD', 'DOM'];
+
+	const countryNameInSentence = $derived(
+		`${countriesWithThe.includes(country) ? 'the ' : ''}${countryName}`
+	);
+
 	const chemicalsCount = $derived(
 		lines.map((l) => l.chemical).filter((c, i, self) => self.indexOf(c) === i).length
 	);
@@ -147,12 +153,14 @@
 
 			<div class="table-container">
 				<table class="table">
-					<caption class="mdf-emphasis">Table of exporting companies</caption>
+					<caption class="mdf-emphasis"
+						>Table of companies exporting to {countryNameInSentence}</caption
+					>
 					<thead>
 						<tr>
-							<th>Export company</th>
+							<th>Company name</th>
 							{#if type === 'import'}
-								<th>Company's home country</th>
+								<th>Company home country</th>
 							{/if}
 							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tons</th>
 						</tr>

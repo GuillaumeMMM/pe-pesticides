@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import * as d3 from 'd3';
-	// @ts-ignore
+	// @ts-expect-error
 	import { geoBertin1953 } from 'd3-geo-projection';
+	import { onMount } from 'svelte';
 	import ColorLegend from '../components/color-legend.svelte';
-
-	import * as world from '../data/world.json';
-	import { importsFromEU, exportsFromEU, aggregatedImports } from '../data/aggregated_imports';
-	import Sidebar from '../components/sidebar.svelte';
-	import { centroids } from '../data/centroids';
 	import CountrySelect from '../components/country-select.svelte';
 	import DownloadData from '../components/download-data.svelte';
+	import Sidebar from '../components/sidebar.svelte';
+	import { aggregatedImports, exportsFromEU, importsFromEU } from '../data/aggregated_imports';
+	import { centroids } from '../data/centroids';
+	import * as world from '../data/world.json';
 
 	let chartEl: HTMLDivElement | null = $state(null);
 	let chartRect: DOMRect | undefined = $derived(
@@ -29,58 +28,10 @@
 	const maxExport = 50000000;
 	const exportQuantityColorScale = d3.scaleLinear([minExport, maxExport], ['#def6fa', '#006397']);
 
-	const splitCount = 8;
-	const importQuantitySplitLength =
-		importQuantityColorScale.domain()[importQuantityColorScale.domain().length - 1] / splitCount;
-
-	const exportQuantitySplitLength =
-		exportQuantityColorScale.domain()[exportQuantityColorScale.domain().length - 1] / splitCount;
-
-	const euZone = {
-		type: 'FeatureCollection',
-		features: [
-			{
-				type: 'Feature',
-				properties: {},
-				geometry: {
-					coordinates: [-13.232689790549728, 32.85662504231553],
-					type: 'Point'
-				}
-			},
-			{
-				type: 'Feature',
-				properties: {},
-				geometry: {
-					coordinates: [-28.151520784338516, 59.67320020072813],
-					type: 'Point'
-				}
-			},
-			{
-				type: 'Feature',
-				properties: {},
-				geometry: {
-					coordinates: [54.50633455419245, 59.24964008652583],
-					type: 'Point'
-				}
-			},
-			{
-				type: 'Feature',
-				properties: {},
-				geometry: {
-					coordinates: [33.90496217563498, 31.074841120639036],
-					type: 'Point'
-				}
-			}
-		]
-	};
-
 	const render = () => {
-		console.log('render');
 		if (!chartRect?.width || !chartRect?.height) {
-			console.log('no width or height');
 			setTimeout(() => {
 				chartRect = chartEl?.getBoundingClientRect();
-				console.log('re-compute', chartEl?.getBoundingClientRect());
 				render();
 			}, 100);
 			return;
@@ -181,7 +132,8 @@
 			.data(world.features)
 			.join('path')
 			.attr('d', pathGenerator as any)
-			.attr('fill', 'white');
+			.attr('fill', 'white')
+			.attr('filter', 'drop-shadow( 2px 2px 0px #00000010)');
 
 		const countriesGroup = container.append('g');
 
@@ -238,7 +190,7 @@
 						.style('opacity', '1');
 				}
 			})
-			.on('click', function (e, d) {
+			.on('click', (e, d) => {
 				if (importsFromEU[d.properties.brk_a3 || ''] || exportsFromEU[d.properties.brk_a3 || '']) {
 					setTimeout(() => {
 						openedCountry = d.properties.brk_a3;
@@ -254,12 +206,14 @@
 				container.selectAll(`.target-group`).style('opacity', '0');
 			});
 
-		container
+		const arrowGroup = container
 			.selectAll('.arrow-group')
 			.data(aggregatedImports)
 			.join('g')
 			.attr('class', (d) => `arrow-group arrow-group-from-${d.from} arrow-group-to-${d.to}`)
-			.style('opacity', '0')
+			.style('opacity', '0');
+
+		arrowGroup
 			.append('path')
 			.attr('d', (d) => {
 				const from = world.features.find((f) => f.properties.brk_a3 === d.from);
@@ -279,6 +233,21 @@
 			.style('stroke-dasharray', '3 2')
 			.style('fill', 'none')
 			.style('stroke-width', '1px');
+
+		/* 		arrowGroup
+			.append('path')
+			.attr('stroke', 'blue')
+			.attr('d', (d) => {
+				const from = world.features.find((f) => f.properties.brk_a3 === d.from);
+				const to = world.features.find((f) => f.properties.brk_a3 === d.to);
+
+				const posFrom = projection(centroids[from?.properties?.brk_a3 || '']);
+				const posTo = projection(centroids[to?.properties?.brk_a3 || '']);
+
+				const angle = Math.atan(Math.abs(posTo[1] - posFrom[1]) / Math.abs(posTo[0] - posFrom[0]));
+
+				return `M${posTo.join(', ')} l0, 10 l-10, -10Z`;
+			}); */
 
 		const targetGroup = container
 			.selectAll('.target-group')
@@ -309,7 +278,7 @@
 			.data(world.features)
 			.join('g')
 			.attr('class', `label-group`)
-			.attr('transform', function (d) {
+			.attr('transform', (d) => {
 				const point = projection(centroids[d.properties.brk_a3]);
 				const ref = [536.386821798111, 418.3598427429403];
 				return ref[0] < point[0] && d.properties.position !== 'left'
@@ -339,24 +308,6 @@
 </script>
 
 <div class="container">
-	<div bind:this={chartEl} class="chart"></div>
-
-	<div class="color-legend">
-		<ColorLegend
-			scale={importQuantityColorScale}
-			splitLength={importQuantitySplitLength}
-			count={splitCount}
-			type="imported"
-		/>
-
-		<ColorLegend
-			scale={exportQuantityColorScale}
-			splitLength={exportQuantitySplitLength}
-			count={splitCount}
-			type="exported"
-		/>
-	</div>
-
 	<div class="country-select">
 		<CountrySelect
 			selectCountry={(country: string) => {
@@ -367,6 +318,14 @@
 
 	<div class="download-data">
 		<DownloadData />
+	</div>
+
+	<div bind:this={chartEl} class="chart"></div>
+
+	<div class="color-legend" aria-hidden="true">
+		<ColorLegend scale={importQuantityColorScale} type="imported" />
+
+		<ColorLegend scale={exportQuantityColorScale} type="exported" />
 	</div>
 </div>
 

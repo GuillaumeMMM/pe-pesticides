@@ -1,5 +1,9 @@
 <script lang="ts">
-	let { scale, splitLength, count, type } = $props();
+	let { scale, type } = $props();
+
+	const count = 8;
+
+	const splitLength = $derived(scale.domain()[scale.domain().length - 1] / count);
 </script>
 
 <div class="container">
