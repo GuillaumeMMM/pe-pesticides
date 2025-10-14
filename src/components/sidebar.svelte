@@ -238,7 +238,7 @@
 	.panel {
 		background-color: white;
 		height: 100%;
-		max-height: calc(100dvh - 2rem);
+		max-height: calc(100dvh - 20px);
 		overflow-y: auto;
 		position: relative;
 		padding: 1rem;
