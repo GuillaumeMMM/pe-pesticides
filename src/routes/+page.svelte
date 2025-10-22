@@ -201,7 +201,7 @@
 					? 'pointer'
 					: 'default'
 			)
-			.on('mouseenter', function (e, d) {
+			.on('mouseenter', (e, d) => {
 				highlightCountry(d.properties.brk_a3);
 			})
 			.on('click', (e, d) => {
@@ -211,7 +211,7 @@
 					});
 				}
 			})
-			.on('mouseout', function () {
+			.on('mouseout', () => {
 				highlightCountry(null);
 			});
 
@@ -351,7 +351,7 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
-		height: 100dvh;
+		height: 100%;
 
 		.chart {
 			flex: 1;
@@ -392,7 +392,7 @@
 			left: 0;
 			top: 0;
 			width: 100vw;
-			height: 100dvh;
+			height: 100%;
 			background-color: rgba(0, 0, 0, 0.222);
 		}
 	}

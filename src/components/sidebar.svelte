@@ -265,7 +265,7 @@
 	.container {
 		width: 800px;
 		max-width: 100%;
-		height: 100dvh;
+		height: 100%;
 		margin-left: auto;
 		padding: 10px;
 	}
