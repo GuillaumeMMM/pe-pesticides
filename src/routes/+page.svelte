@@ -137,10 +137,43 @@
 
 		const countriesGroup = container.append('g');
 
+		function highlightCountry(countryCode: string | null) {
+			if (importsFromEU[countryCode || ''] || exportsFromEU[countryCode || '']) {
+				d3.select(`.label-${countryCode}`).style('opacity', '1');
+
+				d3.select(`.country-${countryCode}`).attr('stroke-width', '2px');
+				d3.select(`.country-${countryCode}`)
+					.raise()
+					.attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
+
+				container
+					.selectAll(`.arrow-group`)
+					.filter(`.arrow-group-from-${countryCode}`)
+					.style('opacity', '1');
+				container
+					.selectAll(`.arrow-group`)
+					.filter(`.arrow-group-to-${countryCode}`)
+					.style('opacity', '1');
+
+				container
+					.selectAll(`.target-group`)
+					.filter(`.target-group-${countryCode}`)
+					.style('opacity', '1');
+			} else {
+				d3.selectAll('.label').style('opacity', '0');
+
+				d3.selectAll(`.country`).attr('stroke-width', '0.5px');
+
+				container.selectAll(`.arrow-group`).style('opacity', '0');
+				container.selectAll(`.target-group`).style('opacity', '0');
+			}
+		}
+
 		countriesGroup
 			.selectAll('path')
 			.data(world.features)
 			.join('path')
+			.attr('class', (d) => `country country-${d.properties.brk_a3}`)
 			.attr('d', pathGenerator as any)
 			.attr('fill', (d) => {
 				const importQuantity = importsFromEU[d.properties.brk_a3 || ''];
@@ -169,26 +202,7 @@
 					: 'default'
 			)
 			.on('mouseenter', function (e, d) {
-				if (importsFromEU[d.properties.brk_a3 || ''] || exportsFromEU[d.properties.brk_a3 || '']) {
-					d3.select(`.label-${d.properties.brk_a3}`).style('opacity', '1');
-
-					d3.select(this).attr('stroke-width', '2px');
-					d3.select(this).raise().attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
-
-					container
-						.selectAll(`.arrow-group`)
-						.filter(`.arrow-group-from-${d.properties.brk_a3}`)
-						.style('opacity', '1');
-					container
-						.selectAll(`.arrow-group`)
-						.filter(`.arrow-group-to-${d.properties.brk_a3}`)
-						.style('opacity', '1');
-
-					container
-						.selectAll(`.target-group`)
-						.filter(`.target-group-${d.properties.brk_a3}`)
-						.style('opacity', '1');
-				}
+				highlightCountry(d.properties.brk_a3);
 			})
 			.on('click', (e, d) => {
 				if (importsFromEU[d.properties.brk_a3 || ''] || exportsFromEU[d.properties.brk_a3 || '']) {
@@ -198,12 +212,7 @@
 				}
 			})
 			.on('mouseout', function () {
-				d3.selectAll('.label').style('opacity', '0');
-
-				d3.select(this).attr('stroke-width', '0.5px');
-
-				container.selectAll(`.arrow-group`).style('opacity', '0');
-				container.selectAll(`.target-group`).style('opacity', '0');
+				highlightCountry(null);
 			});
 
 		const arrowGroup = container
@@ -215,6 +224,7 @@
 
 		arrowGroup
 			.append('path')
+			.attr('class', 'arrow')
 			.attr('d', (d) => {
 				const from = world.features.find((f) => f.properties.brk_a3 === d.from);
 				const to = world.features.find((f) => f.properties.brk_a3 === d.to);
@@ -233,21 +243,6 @@
 			.style('stroke-dasharray', '3 2')
 			.style('fill', 'none')
 			.style('stroke-width', '1px');
-
-		/* 		arrowGroup
-			.append('path')
-			.attr('stroke', 'blue')
-			.attr('d', (d) => {
-				const from = world.features.find((f) => f.properties.brk_a3 === d.from);
-				const to = world.features.find((f) => f.properties.brk_a3 === d.to);
-
-				const posFrom = projection(centroids[from?.properties?.brk_a3 || '']);
-				const posTo = projection(centroids[to?.properties?.brk_a3 || '']);
-
-				const angle = Math.atan(Math.abs(posTo[1] - posFrom[1]) / Math.abs(posTo[0] - posFrom[0]));
-
-				return `M${posTo.join(', ')} l0, 10 l-10, -10Z`;
-			}); */
 
 		const targetGroup = container
 			.selectAll('.target-group')

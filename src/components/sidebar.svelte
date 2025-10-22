@@ -73,6 +73,24 @@
 			.sort((cA, cB) => ((cA.quantity || 0) > (cB.quantity || 0) ? -1 : 1))
 	);
 
+	const exportCountries = $derived(
+		exportCompanies.reduce((prev: { from: any; quantity: number }[], curr) => {
+			const match = prev.find((e) => e.from.brk_a3 === curr.export_country?.brk_a3);
+			if (match && match.quantity) {
+				match.quantity += curr.quantity || 0;
+				return prev;
+			} else {
+				return [
+					...prev,
+					{
+						quantity: curr.quantity || 0,
+						from: curr.export_country
+					}
+				];
+			}
+		}, [])
+	);
+
 	function clickOutside(element: Element, callbackFunction: Function) {
 		function onClick(event: MouseEvent) {
 			if (!element.contains(event.target as any)) {
@@ -151,10 +169,27 @@
 				</div>
 			</div>
 
+			<!-- <div class="bars-container">
+				<div class="bars-legend">Countries exporting to {countryNameInSentence}</div>
+				<ul class="bars">
+					{#each exportCountries as country}
+						<li class="bar">
+							<div class="bar-label">{country.from.brk_name}</div>
+							<div class="bar-stick-container">
+								<div class="bar-stick" style:width={`${(100 * country.quantity) / totalQuantity}%`}>
+									{country.quantity}
+								</div>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			</div> -->
+
 			<div class="table-container">
 				<table class="table">
 					<caption class="mdf-emphasis"
-						>Table of companies exporting to {countryNameInSentence}</caption
+						>Companies exporting {type === 'export' ? 'from' : 'to'}
+						{countryNameInSentence}</caption
 					>
 					<thead>
 						<tr>
@@ -182,7 +217,7 @@
 			<div class="table-container">
 				<table class="table">
 					<caption class="mdf-emphasis"
-						>Table of chemicals {type === 'export' ? 'exported' : 'imported'}</caption
+						>Chemicals {type === 'export' ? 'exported' : 'imported'}</caption
 					>
 					<thead>
 						<tr>
@@ -309,7 +344,8 @@
 		}
 	}
 
-	.table-container {
+	.table-container,
+	.bars-container {
 		margin-top: 2rem;
 	}
 
@@ -334,6 +370,35 @@
 		caption {
 			text-align: left;
 			padding-bottom: 10px;
+		}
+	}
+
+	.bars-legend {
+		padding-bottom: 10px;
+		font-weight: 600;
+	}
+
+	.bars {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+
+		.bar {
+			display: flex;
+			align-items: center;
+
+			.bar-stick-container {
+				height: 20px;
+				flex: 1;
+
+				.bar-stick {
+					background-color: #006397;
+				}
+			}
+
+			.bar-label {
+				width: 100px;
+			}
 		}
 	}
 
