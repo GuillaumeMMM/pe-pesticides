@@ -53,7 +53,7 @@
 			.append('svg')
 			.attr('title', 'Map')
 			.attr('width', chartRect?.width + 'px')
-			.attr('height', chartRect?.height + 'px');
+			.attr('height', (chartRect?.height || 0) - 5 + 'px');
 
 		const defs = svg.append('defs');
 
