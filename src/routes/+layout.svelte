@@ -35,6 +35,13 @@
 			U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 	}
 
+	@font-face {
+		font-family: 'Radikal-Bold';
+		font-style: bold;
+		font-weight: 600;
+		src: url('Radikal-Bold.woff2');
+	}
+
 	.container {
 		min-height: 100dvh;
 		background: #cccccc;

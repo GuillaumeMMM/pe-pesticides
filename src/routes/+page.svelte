@@ -10,6 +10,7 @@
 	import { aggregatedImports, exportsFromEU, importsFromEU } from '../data/aggregated_imports';
 	import { centroids } from '../data/centroids';
 	import * as world from '../data/world.json';
+	import Sources from '../components/sources.svelte';
 
 	let chartEl: HTMLDivElement | null = $state(null);
 	let chartRect: DOMRect | undefined = $derived(
@@ -179,6 +180,7 @@
 				container.selectAll(`.target-group`).style('opacity', '0');
 			}
 		}
+
 		countriesGroup
 			.selectAll('path')
 			.data(world.features)
@@ -313,12 +315,17 @@
 </script>
 
 <div class="container">
-	<div class="country-select">
+	<h1>BANNED PESTICIDES NOTIFIED FOR EXPORT FROM THE EU (2024)</h1>
+	<!-- <div class="country-select">
 		<CountrySelect
 			selectCountry={(country: string) => {
 				openedCountry = country;
 			}}
 		/>
+	</div> -->
+
+	<div class="sources">
+		<Sources />
 	</div>
 
 	<div class="download-data">
@@ -368,11 +375,22 @@
 		}
 	}
 
+	h1 {
+		text-align: center;
+		font-size: 1.8rem;
+		letter-spacing: 2px;
+		padding-top: 1rem;
+		width: 100%;
+		font-weight: 600;
+		font-family: Radikal-Bold;
+		color: #843027;
+	}
+
 	.color-legend {
 		position: absolute;
 		bottom: 1rem;
 		right: 1rem;
-		max-width: calc(100% - 2rem);
+		max-width: calc(50% - 2rem);
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -384,6 +402,14 @@
 		right: 1rem;
 		max-width: calc(100% - 2rem);
 		width: 300px;
+	}
+
+	.sources {
+		position: absolute;
+		bottom: 1rem;
+		left: 1rem;
+		max-width: calc(50% - 2rem);
+		width: 400px;
 	}
 
 	.download-data {
@@ -407,9 +433,31 @@
 		}
 	}
 
+	@media (max-width: 1200px) {
+		.download-data {
+			display: none;
+		}
+
+		h1 {
+			font-size: 1.5rem;
+		}
+	}
+
 	@media (max-width: 700px) {
 		.download-data {
 			display: none;
+		}
+
+		h1 {
+			font-size: 1.2rem;
+		}
+
+		.sources {
+			display: none;
+		}
+
+		.color-legend {
+			max-width: calc(100% - 2rem);
 		}
 	}
 
