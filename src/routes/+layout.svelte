@@ -38,7 +38,6 @@
 	.container {
 		min-height: 100dvh;
 		background: #cccccc;
-		background: linear-gradient(218deg, rgb(192, 192, 192) 0%, rgb(239, 239, 239) 100%);
 		display: flex;
 		flex-direction: column;
 		font-family: 'Source Sans Pro';
