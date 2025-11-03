@@ -6,6 +6,7 @@
 	let { country, onClose } = $props();
 
 	let closeEl: HTMLButtonElement | null = $state(null);
+	let selectedTab = $state('1');
 
 	const type = $derived(exportsFromEU[country] ? 'export' : 'import');
 
@@ -150,7 +151,7 @@
 					<div class="separator"></div>
 					<div class="figure-right">
 						<div class="figure-label mdf-muted">
-							Tonnes of chemicals {type === 'export' ? 'exported' : 'imported'}
+							Tonnes of pesticides {type === 'export' ? 'exported' : 'imported'} (expected amount)
 						</div>
 						<div class="figure-value mdf-emphasis">
 							{new Intl.NumberFormat('en-US').format(Math.round(totalQuantity / 1000))}
@@ -162,7 +163,7 @@
 					<div class="separator"></div>
 					<div class="figure-right">
 						<div class="figure-label mdf-muted">
-							Different chemicals {type === 'export' ? 'exported' : 'imported'}
+							Different pesticides {type === 'export' ? 'exported' : 'imported'}
 						</div>
 						<div class="figure-value mdf-emphasis">{chemicalsCount}</div>
 					</div>
@@ -185,56 +186,88 @@
 				</ul>
 			</div> -->
 
-			<div class="table-container">
-				<table class="table">
-					<caption class="mdf-emphasis"
-						>Companies exporting {type === 'export' ? 'from' : 'to'}
-						{countryNameInSentence}</caption
-					>
-					<thead>
-						<tr>
-							<th>Company name</th>
-							{#if type === 'import'}
-								<th>Company home country</th>
-							{/if}
-							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each exportCompanies as line}
-							<tr>
-								<td>{line.exporter}</td>
-								{#if type === 'import'}
-									<td>{line.export_country?.brk_name}</td>
-								{/if}
-								<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+			<div role="tablist" class="tablist">
+				<button
+					id="tab-1"
+					type="button"
+					role="tab"
+					aria-selected={selectedTab === '1'}
+					aria-controls="tabpanel-1"
+					onclick={() => {
+						selectedTab = '1';
+					}}
+				>
+					Pesticides
+				</button>
+				<button
+					id="tab-2"
+					type="button"
+					role="tab"
+					aria-selected={selectedTab === '2'}
+					aria-controls="tabpanel-2"
+					onclick={() => {
+						selectedTab = '2';
+					}}
+				>
+					Exporting companies
+				</button>
 			</div>
 
-			<div class="table-container">
-				<table class="table">
-					<caption class="mdf-emphasis"
-						>Chemicals {type === 'export' ? 'exported' : 'imported'}</caption
-					>
-					<thead>
-						<tr>
-							<th>Chemical name</th>
-							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each substances as line}
+			{#if selectedTab === '1'}
+				<div id="tabpanel-1" role="tabpanel" aria-labelledby="tab-1">
+					<div class="table-container">
+						<table class="table">
+							<caption class="mdf-emphasis"
+								>Pesticides {type === 'export' ? 'exported' : 'imported'}</caption
+							>
+							<thead>
+								<tr>
+									<th>Chemical name</th>
+									<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each substances as line}
+									<tr>
+										<td>{line.chemical}</td>
+										<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			{/if}
+			{#if selectedTab === '2'}
+				<div class="table-container">
+					<table class="table">
+						<caption class="mdf-emphasis"
+							>Companies exporting {type === 'export' ? 'from' : 'to'}
+							{countryNameInSentence}</caption
+						>
+						<thead>
 							<tr>
-								<td>{line.chemical}</td>
-								<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
+								<th>Company name</th>
+								{#if type === 'import'}
+									<th>Company home country</th>
+								{/if}
+								<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+						</thead>
+						<tbody>
+							{#each exportCompanies as line}
+								<tr>
+									<td>{line.exporter}</td>
+									{#if type === 'import'}
+										<td>{line.export_country?.brk_name}</td>
+									{/if}
+									<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
 
 			<a type="button" class="download mdf-button" {href} download>
 				<span class="download-icon" aria-hidden="true">
@@ -304,6 +337,49 @@
 		margin-top: 1rem;
 	}
 
+	.tablist {
+		width: calc(100% - 4px);
+		display: flex;
+		margin-top: 2rem;
+
+		button {
+			flex: 1;
+			height: 40px;
+			background: white;
+			font-size: 1rem;
+			font-weight: 600;
+			border: none;
+			border-bottom: 1px solid #33333350;
+			color: #333333;
+			cursor: pointer;
+
+			&:hover {
+				background: #91919110;
+			}
+
+			&:focus-visible {
+				outline: 2px solid #0f0f0f;
+				outline-offset: 2px;
+			}
+
+			&[aria-selected='true'] {
+				color: #e62d41;
+				background: #e62d4010;
+				border-bottom: 2px solid #e62d41;
+			}
+		}
+	}
+
+	.export {
+		.tablist button {
+			&[aria-selected='true'] {
+				color: #006397;
+				background: #00639710;
+				border-bottom: 2px solid #006397;
+			}
+		}
+	}
+
 	.figures {
 		display: flex;
 		flex-wrap: wrap;
@@ -346,7 +422,7 @@
 
 	.table-container,
 	.bars-container {
-		margin-top: 2rem;
+		margin-top: 1rem;
 	}
 
 	table {
