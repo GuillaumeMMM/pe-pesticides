@@ -18,10 +18,21 @@
 	let openedCountry: string | undefined = $state(undefined);
 
 	const minImport = Math.min(...Object.values(importsFromEU));
-	const maxImport = 20000000;
+	const maxImport = Math.max(...Object.values(importsFromEU));
+	const split = (maxImport - minImport) / 8;
 	const importQuantityColorScale = d3.scaleLinear(
-		[minImport, maxImport / 3, maxImport],
-		['#fff5f2', '#F18D80', '#E62D41']
+		[
+			minImport,
+			minImport + split,
+			minImport + 2 * split,
+			minImport + 3 * split,
+			minImport + 4 * split,
+			minImport + 5 * split,
+			minImport + 6 * split,
+			minImport + 7 * split,
+			maxImport
+		],
+		['#FDDFD5', '#F8C3B3', '#F5A898', '#F28D81', '#F0756D', '#EC6762', '#E94C53', '#E62C41']
 	);
 
 	const minExport = Math.min(...Object.values(exportsFromEU));
@@ -168,7 +179,6 @@
 				container.selectAll(`.target-group`).style('opacity', '0');
 			}
 		}
-
 		countriesGroup
 			.selectAll('path')
 			.data(world.features)
@@ -318,9 +328,9 @@
 	<div bind:this={chartEl} class="chart"></div>
 
 	<div class="color-legend" aria-hidden="true">
-		<ColorLegend scale={importQuantityColorScale} type="imported" />
+		<ColorLegend scale={importQuantityColorScale} type="imported" maxDisplayed={20000} />
 
-		<ColorLegend scale={exportQuantityColorScale} type="exported" />
+		<ColorLegend scale={exportQuantityColorScale} type="exported" maxDisplayed={50000} />
 	</div>
 </div>
 

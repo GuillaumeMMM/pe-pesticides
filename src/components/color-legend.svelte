@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { scale, type } = $props();
+	let { scale, type, maxDisplayed } = $props();
 
 	const count = 8;
 
@@ -9,15 +9,15 @@
 <div class="container">
 	<div class="legend">
 		<div>
-			{`${new Intl.NumberFormat('en-US').format(scale.domain()[scale.domain().length - 1] / 1000)} ${type} tons of chemicals`}
+			{`${new Intl.NumberFormat('en-US').format(maxDisplayed || scale.domain()[scale.domain().length - 1] / 1000)} ${type} tons of chemicals`}
 		</div>
 
 		<div>0</div>
 	</div>
 	<div class={`shades ${type}`}>
-		{#each Array(count + 1)
+		{#each Array(count)
 			.fill(null)
-			.map((_, i) => scale(i * splitLength))
+			.map((_, i) => (i === 0 ? scale(0) : scale((i + 1) * splitLength)))
 			.reverse() as color}
 			<div style:background-color={color} class="shade"></div>
 		{/each}
@@ -47,7 +47,7 @@
 
 			&.exported .shade {
 				background: repeating-linear-gradient(
-					135deg,
+					140deg,
 					#ffffff90 0px,
 					#ffffff90 4px,
 					transparent 4px,
