@@ -1,12 +1,4 @@
-<script>
-	import { rawData } from '../data/raw';
-
-	const json = JSON.stringify(rawData);
-	const blob = new Blob([json], { type: 'application/json' });
-	const href = URL.createObjectURL(blob);
-</script>
-
-<a {href} download class="mdf-button download">
+<a href="/src/data/2024_EU_banned_pesticide_exports.xlsx" download class="mdf-button download">
 	<span class="download-icon" aria-hidden="true">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

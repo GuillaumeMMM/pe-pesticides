@@ -1,3 +1,11 @@
+<script>
+	import DownloadData from './download-data.svelte';
+</script>
+
+<div class="download">
+	<DownloadData />
+</div>
+
 <p class="text">
 	<span class="mdf-emphasis">Sources:</span> Unearthed/Public Eye analysis of 2024 export notifications
 	received from the European Chemicals Agency (ECHA) and national authorities. Figures given in export
@@ -8,8 +16,13 @@
 </p>
 
 <style>
+	.download {
+		display: inline-block;
+		margin-bottom: 10px;
+	}
+
 	.text {
 		color: #4c4c4c;
-		font-size: 0.6rem;
+		font-size: 0.8rem;
 	}
 </style>

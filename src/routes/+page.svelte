@@ -328,9 +328,9 @@
 		<Sources />
 	</div>
 
-	<div class="download-data">
+	<!-- <div class="download-data">
 		<DownloadData />
-	</div>
+	</div> -->
 
 	<div bind:this={chartEl} class="chart"></div>
 
@@ -388,7 +388,7 @@
 
 	.color-legend {
 		position: absolute;
-		bottom: 1rem;
+		top: 4rem;
 		right: 1rem;
 		max-width: calc(50% - 2rem);
 		display: flex;
@@ -409,7 +409,7 @@
 		bottom: 1rem;
 		left: 1rem;
 		max-width: calc(50% - 2rem);
-		width: 400px;
+		width: 500px;
 	}
 
 	.download-data {
