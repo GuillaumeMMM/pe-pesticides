@@ -9,7 +9,7 @@
 <div class="container">
 	<div class="legend">
 		<div>
-			{`${new Intl.NumberFormat('en-US').format(maxDisplayed || scale.domain()[scale.domain().length - 1] / 1000)} ${type} tons of chemicals`}
+			{`${new Intl.NumberFormat('en-US').format(maxDisplayed || scale.domain()[scale.domain().length - 1] / 1000)} ${type} tonnes of chemicals`}
 		</div>
 
 		<div>0</div>

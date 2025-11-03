@@ -23,6 +23,6 @@
 
 	.text {
 		color: #4c4c4c;
-		font-size: 0.8rem;
+		font-size: 0.6rem;
 	}
 </style>

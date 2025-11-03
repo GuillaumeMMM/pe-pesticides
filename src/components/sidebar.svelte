@@ -150,10 +150,10 @@
 					<div class="separator"></div>
 					<div class="figure-right">
 						<div class="figure-label mdf-muted">
-							Tons of chemicals {type === 'export' ? 'exported' : 'imported'}
+							Tonnes of chemicals {type === 'export' ? 'exported' : 'imported'}
 						</div>
 						<div class="figure-value mdf-emphasis">
-							{new Intl.NumberFormat('en-US').format(Math.round(totalQuantity))}
+							{new Intl.NumberFormat('en-US').format(Math.round(totalQuantity / 1000))}
 						</div>
 					</div>
 				</div>
@@ -197,7 +197,7 @@
 							{#if type === 'import'}
 								<th>Company home country</th>
 							{/if}
-							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tons</th>
+							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -207,7 +207,7 @@
 								{#if type === 'import'}
 									<td>{line.export_country?.brk_name}</td>
 								{/if}
-								<td>{new Intl.NumberFormat('en-US').format(line.quantity || 0)}</td>
+								<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
 							</tr>
 						{/each}
 					</tbody>
@@ -222,14 +222,14 @@
 					<thead>
 						<tr>
 							<th>Chemical name</th>
-							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tons</th>
+							<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#each substances as line}
 							<tr>
 								<td>{line.chemical}</td>
-								<td>{new Intl.NumberFormat('en-US').format(line.quantity || 0)}</td>
+								<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
 							</tr>
 						{/each}
 					</tbody>
