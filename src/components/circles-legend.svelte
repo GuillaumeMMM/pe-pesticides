@@ -2,12 +2,12 @@
 	const { scale } = $props();
 
 	const circlesLegendData = [20000, 10000, 5000, 2000, 1000, 500, 100, 0];
-	const diameters = circlesLegendData.map((d) => 2 * scale(d));
+	const diameters = circlesLegendData.map((d) => 2 * scale(d * 1000));
 </script>
 
 <div class="container">
 	<div class="legend">
-		<strong class="mdf-emphasis">Exports of banned pesticides</strong> (in metric tons)
+		<strong class="mdf-emphasis">Exports of banned pesticides</strong> (in tonnes)
 	</div>
 
 	<div class="circles">

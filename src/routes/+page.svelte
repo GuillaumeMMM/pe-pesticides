@@ -11,6 +11,7 @@
 	import { centroids } from '../data/centroids';
 	import * as world from '../data/world.json';
 	import Sources from '../components/sources.svelte';
+	import CirclesLegend from '../components/circles-legend.svelte';
 
 	let chartEl: HTMLDivElement | null = $state(null);
 	let chartRect: DOMRect | undefined = $derived(
@@ -39,6 +40,8 @@
 	const minExport = Math.min(...Object.values(exportsFromEU));
 	const maxExport = 50000000;
 	const exportQuantityColorScale = d3.scaleLinear([minExport, maxExport], ['#def6fa', '#006397']);
+
+	const importQuantityCircleRadiusScale = d3.scaleSqrt([minImport, maxImport], [0, 30]);
 
 	const render = () => {
 		if (!chartRect?.width || !chartRect?.height) {
@@ -227,6 +230,36 @@
 				highlightCountry(null);
 			});
 
+		container
+			.selectAll('g')
+			.data(
+				Object.entries(importsFromEU).map(([key, val]) => ({
+					countryCode: key,
+					quantityImported: val
+				}))
+			)
+			.join('g')
+			.attr('class', 'circle-group')
+			.append('circle')
+			.attr('id', 'country-import-circle')
+			.attr('cx', function (d) {
+				const country = world.features.find((f) => f.properties.brk_a3 === d.countryCode);
+				const pos = projection(d3.geoCentroid(country as any));
+				return `${pos[0]}px`;
+			})
+			.attr('cy', function (d) {
+				const country = world.features.find((f) => f.properties.brk_a3 === d.countryCode);
+				const pos = projection(d3.geoCentroid(country as any));
+				return `${pos[1]}px`;
+			})
+			.attr('r', (d) => {
+				return `${importQuantityCircleRadiusScale(d.quantityImported)}px`;
+			})
+			.attr('fill', '#333333')
+			.attr('stroke', 'white')
+			.attr('stroke-width', '1px')
+			.style('pointer-events', 'none');
+
 		const arrowGroup = container
 			.selectAll('.arrow-group')
 			.data(aggregatedImports)
@@ -332,6 +365,10 @@
 		<DownloadData />
 	</div> -->
 
+	<div class="circles-legend">
+		<CirclesLegend scale={importQuantityCircleRadiusScale} />
+	</div>
+
 	<div bind:this={chartEl} class="chart"></div>
 
 	<div class="color-legend" aria-hidden="true">
@@ -431,6 +468,13 @@
 			height: 100%;
 			background-color: rgba(0, 0, 0, 0.222);
 		}
+	}
+
+	.circles-legend {
+		position: absolute;
+		bottom: 1rem;
+		right: 1rem;
+		max-width: 100%;
 	}
 
 	@media (max-width: 1200px) {
