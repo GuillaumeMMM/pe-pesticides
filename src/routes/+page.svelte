@@ -4,8 +4,6 @@
 	import { geoBertin1953 } from 'd3-geo-projection';
 	import { onMount } from 'svelte';
 	import ColorLegend from '../components/color-legend.svelte';
-	import CountrySelect from '../components/country-select.svelte';
-	import DownloadData from '../components/download-data.svelte';
 	import Sidebar from '../components/sidebar.svelte';
 	import { aggregatedImports, exportsFromEU, importsFromEU } from '../data/aggregated_imports';
 	import { centroids } from '../data/centroids';
@@ -154,34 +152,73 @@
 
 		function highlightCountry(countryCode: string | null) {
 			if (importsFromEU[countryCode || ''] || exportsFromEU[countryCode || '']) {
-				d3.select(`.label-${countryCode}`).style('opacity', '1');
+				const mainCountry = countryCode;
+				const relatedCountries = aggregatedImports
+					.filter((c) => c.from === countryCode || c.to === countryCode)
+					.map((c) => [c.from, c.to])
+					.flat()
+					.filter((c, i, self) => self.indexOf(c) === i)
+					.filter((c) => c !== countryCode);
 
-				d3.select(`.country-${countryCode}`).attr('stroke-width', '2px');
-				d3.select(`.country-${countryCode}`)
-					.raise()
-					.attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
+				//	Reset Backgrounds & stroke
+				d3.selectAll(`.country`).attr('stroke-width', '0.5px');
+				d3.selectAll(`.country`)
+					.attr('fill', fillCountry(null))
+					.attr('stroke', strokeCountry(null));
 
 				container
 					.selectAll(`.arrow-group`)
-					.filter(`.arrow-group-from-${countryCode}`)
+					.filter(`.arrow-group-from-${mainCountry}`)
 					.style('opacity', '1');
 				container
 					.selectAll(`.arrow-group`)
-					.filter(`.arrow-group-to-${countryCode}`)
+					.filter(`.arrow-group-to-${mainCountry}`)
 					.style('opacity', '1');
 
 				container
 					.selectAll(`.target-group`)
-					.filter(`.target-group-${countryCode}`)
+					.filter(`.target-group-${mainCountry}`)
 					.style('opacity', '1');
+
+				d3.select(`.label-${mainCountry}`).style('opacity', '1');
+
+				[...relatedCountries, mainCountry].forEach((c) => {
+					d3.select(`.country-${c}`).attr('stroke-width', '2px');
+					d3.select(`.country-${c}`).raise().attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
+					d3.select(`.country-${c}`).attr('fill', fillCountry(c)).attr('stroke', strokeCountry(c));
+				});
 			} else {
 				d3.selectAll('.label').style('opacity', '0');
 
 				d3.selectAll(`.country`).attr('stroke-width', '0.5px');
+				d3.selectAll(`.country`)
+					.attr('fill', (d: any) => {
+						return fillCountry(d.properties.brk_a3);
+					})
+					.attr('stroke', (d: any) => strokeCountry(d.properties.brk_a3));
 
 				container.selectAll(`.arrow-group`).style('opacity', '0');
 				container.selectAll(`.target-group`).style('opacity', '0');
 			}
+		}
+
+		function fillCountry(countryCode: string | null) {
+			const importQuantity = importsFromEU[countryCode || ''];
+			const exportQuantity = exportsFromEU[countryCode || ''];
+
+			if (importQuantity === undefined && exportQuantity === undefined) {
+				return 'white';
+			}
+
+			return importQuantityColorScale(importQuantity) || exportQuantityColorScale(exportQuantity);
+		}
+
+		function strokeCountry(countryCode: string | null) {
+			return importsFromEU[countryCode || '']
+				? importQuantityColorScale(maxImport)
+				: exportsFromEU[countryCode || '']
+					? exportQuantityColorScale(maxExport)
+					: 'grey';
 		}
 
 		countriesGroup
@@ -190,26 +227,11 @@
 			.join('path')
 			.attr('class', (d) => `country country-${d.properties.brk_a3}`)
 			.attr('d', pathGenerator as any)
-			.attr('fill', (d) => {
-				const importQuantity = importsFromEU[d.properties.brk_a3 || ''];
-				const exportQuantity = exportsFromEU[d.properties.brk_a3 || ''];
-
-				if (importQuantity === undefined && exportQuantity === undefined) {
-					return 'white';
-				}
-
-				return importQuantityColorScale(importQuantity) || exportQuantityColorScale(exportQuantity);
-			})
+			.attr('fill', (d) => fillCountry(d.properties.brk_a3))
 			.attr('mask', (d) =>
 				exportsFromEU[d.properties.brk_a3 || ''] ? 'url(#mask-diagonal-stripes)' : 'none'
 			)
-			.attr('stroke', (d) =>
-				importsFromEU[d.properties.brk_a3 || '']
-					? importQuantityColorScale(maxImport)
-					: exportsFromEU[d.properties.brk_a3 || '']
-						? exportQuantityColorScale(maxExport)
-						: 'grey'
-			)
+			.attr('stroke', (d) => strokeCountry(null))
 			.attr('stroke-width', '0.5px')
 			.style('cursor', (d) =>
 				importsFromEU[d.properties.brk_a3 || ''] || exportsFromEU[d.properties.brk_a3 || '']
