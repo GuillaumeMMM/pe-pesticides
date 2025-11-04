@@ -1,4 +1,12 @@
-<a href="/src/data/2024_EU_banned_pesticide_exports.xlsx" download class="mdf-button download">
+<script>
+	import { assets } from '$app/paths';
+</script>
+
+<a
+	href={`${assets}/data/2024_EU_banned_pesticide_exports.xlsx`}
+	download
+	class="mdf-button download"
+>
 	<span class="download-icon" aria-hidden="true">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

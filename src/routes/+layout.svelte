@@ -39,7 +39,7 @@
 		font-family: 'Radikal-Bold';
 		font-style: bold;
 		font-weight: 600;
-		src: url('Radikal-Bold.woff2');
+		src: url('/fonts/Radikal-Bold.woff2');
 	}
 
 	.container {
