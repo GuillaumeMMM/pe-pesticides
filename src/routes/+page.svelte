@@ -299,17 +299,21 @@
 				const posFrom = projection(centroids[from?.properties?.brk_a3 || '']);
 				const posTo = projection(centroids[to?.properties?.brk_a3 || '']);
 
-				const curveIndex = 0;
+				const middle = [(posTo[0] + posFrom[0]) / 2, (posTo[1] + posFrom[1]) / 2];
+				const dir = [posTo[0] - posFrom[0], posTo[1] - posFrom[1]];
+				const dirBase = Math.sqrt(dir[0] * dir[0] + dir[1] * dir[1]);
+				const norm = [dir[0] / dirBase, dir[1] / dirBase];
+				const ortho = [-norm[1], norm[0]];
 
-				const control = [(posTo[0] + posFrom[0]) / 2, Math.min(posTo[1], posFrom[1]) - curveIndex];
+				const coeff = 5;
 
-				return `M${posFrom.join(' ')} C${posFrom.join(' ')}, ${control.join(' ')}, ${posTo.join(' ')}`;
+				const control1 = [middle[0] + coeff * ortho[0], middle[1] + coeff * ortho[1]];
+				const control2 = [middle[0] - coeff * ortho[0], middle[1] - coeff * ortho[1]];
+
+				return `M${posFrom.join(' ')} C${posFrom.join(' ')}, ${control1.join(' ')}, ${posTo.join(' ')} C${posTo.join(' ')}, ${control2.join(' ')}, ${posFrom.join(' ')}`;
 			})
 			.style('pointer-events', 'none')
-			.style('stroke', '#333333')
-			.style('stroke-dasharray', '3 2')
-			.style('fill', 'none')
-			.style('stroke-width', '1px');
+			.style('fill', '#E62D4190');
 
 		const targetGroup = container
 			.selectAll('.target-group')
