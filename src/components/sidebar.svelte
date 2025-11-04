@@ -269,7 +269,12 @@
 				</div>
 			{/if}
 
-			<a type="button" class="download mdf-button" {href} download>
+			<a
+				type="button"
+				class="download mdf-button"
+				{href}
+				download={`${countryName.split(' ').join('_')}_data.json`}
+			>
 				<span class="download-icon" aria-hidden="true">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"

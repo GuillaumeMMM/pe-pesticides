@@ -27,7 +27,7 @@
 
 <style>
 	.container {
-		width: 400px;
+		width: 300px;
 		max-width: 100%;
 
 		.legend {

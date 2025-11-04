@@ -10,6 +10,7 @@
 	import * as world from '../data/world.json';
 	import Sources from '../components/sources.svelte';
 	import CirclesLegend from '../components/circles-legend.svelte';
+	import { allImports } from '../data/all_imports';
 
 	let chartEl: HTMLDivElement | null = $state(null);
 	let chartRect: DOMRect | undefined = $derived(
@@ -39,7 +40,7 @@
 	const maxExport = 50000000;
 	const exportQuantityColorScale = d3.scaleLinear([minExport, maxExport], ['#def6fa', '#006397']);
 
-	const importQuantityCircleRadiusScale = d3.scaleSqrt([minImport, maxImport], [0, 30]);
+	const importQuantityCircleRadiusScale = d3.scaleSqrt([minImport, maxImport], [0, 25]);
 
 	const render = () => {
 		if (!chartRect?.width || !chartRect?.height) {
@@ -347,9 +348,10 @@
 			.attr('transform', (d) => {
 				const point = projection(centroids[d.properties.brk_a3]);
 				const ref = [536.386821798111, 418.3598427429403];
+				const shiftUp = point[1] > (chartRect?.height || 0) - 100 ? 50 : 0;
 				return ref[0] < point[0] && d.properties.position !== 'left'
-					? `translate(${point[0] + 7}, ${point[1] - 12})`
-					: `translate(${point[0] - 187}, ${point[1] - 12})`;
+					? `translate(${point[0] + 7}, ${point[1] - 12 - shiftUp})`
+					: `translate(${point[0] - 187}, ${point[1] - 12 - shiftUp})`;
 			});
 
 		labelGroup
@@ -358,11 +360,55 @@
 			.attr('opacity', '0')
 			.attr('pointer-events', 'none')
 			.attr('width', '180px')
-			.attr('height', '26px')
+			.attr('height', '200px')
 			.html((d) => {
 				const point = projection(centroids[d.properties.brk_a3]);
 				const ref = [536.386821798111, 418.3598427429403];
-				return `<span class="country-label ${importsFromEU[d.properties.brk_a3 || ''] ? 'import' : ''} ${ref[0] > point[0] || d.properties.position === 'left' ? 'left' : ''}""><span>${d.properties.brk_name}</span></span>`;
+
+				const type = importsFromEU[d.properties.brk_a3] ? 'import' : 'export';
+
+				const total = new Intl.NumberFormat('en-US').format(
+					Math.round(
+						(importsFromEU[d.properties.brk_a3] || exportsFromEU[d.properties.brk_a3]) / 1000
+					)
+				);
+
+				const lines = allImports.filter((i) =>
+					type === 'import'
+						? i.import_country.brk_a3 === d.properties.brk_a3
+						: i.export_country.brk_a3 === d.properties.brk_a3
+				);
+				const pesticides = lines
+					.reduce((prev: Partial<(typeof lines)[0]>[], curr) => {
+						const match = prev.find((e) => e.chemical === curr.chemical);
+						if (match && match.quantity) {
+							match.quantity += curr.quantity;
+							return prev;
+						} else {
+							return [
+								...prev,
+								{
+									quantity: curr.quantity,
+									chemical: curr.chemical
+								}
+							];
+						}
+					}, [])
+					.sort((cA, cB) => ((cA.quantity || 0) > (cB.quantity || 0) ? -1 : 1));
+				return `
+					<div class="country-dropdown ${type} ${ref[0] > point[0] || d.properties.position === 'left' ? 'left' : ''}"">
+						<div class="country-dropdown-name">${d.properties.brk_name} <div class="country-dropdown-quantity">${total} ${type === 'import' ? 'imported' : 'exported'} tonnes</div></div>
+						<div class="country-dropdown-stats">
+							<div class="country-dropdown-stats-label">Most ${type === 'import' ? 'imported' : 'exported'} pesticides :</div>
+							<p class="country-dropdown-stats-list">${pesticides
+								.slice(0, 3)
+								.map((p) => p.chemical)
+								.join(
+									', '
+								)}${pesticides.length > 3 ? `, and ${pesticides.length - 3} more` : ''}</p>
+						</div>
+					</div>
+				`;
 			});
 
 		return svg;
@@ -500,10 +546,10 @@
 		position: absolute;
 		bottom: 1rem;
 		right: 1rem;
-		max-width: 100%;
+		max-width: calc(100% - 2rem);
 	}
 
-	@media (max-width: 1200px) {
+	@media (max-width: 75rem) {
 		.download-data {
 			display: none;
 		}
@@ -513,7 +559,7 @@
 		}
 	}
 
-	@media (max-width: 700px) {
+	@media (max-width: 50rem) {
 		.download-data {
 			display: none;
 		}
@@ -532,26 +578,52 @@
 	}
 
 	:global {
-		span.country-label {
+		.country-dropdown {
 			width: 100%;
 			display: inline-flex;
 			margin-top: 2px;
+			flex-direction: column;
+			background-color: white;
+			border-radius: 3px;
+			border: 1px solid #006397;
 
 			&.left {
 				justify-content: flex-end;
 			}
 
-			span {
-				background-color: white;
-				padding: 2px 4px;
-				border-radius: 3px;
-				border: 2px solid #006397;
+			.country-dropdown-name {
+				font-weight: 600;
+				border-bottom: 1px solid #006397;
+				padding: 4px 6px;
+				background-color: #00639710;
 			}
 
 			&.import {
-				span {
+				border-color: #e62d41;
+
+				.country-dropdown-name {
 					border-color: #e62d41;
+					background-color: #e62d4010;
 				}
+			}
+
+			.country-dropdown-stats {
+				padding: 4px 6px;
+				font-size: 0.7rem;
+
+				.country-dropdown-stats-list {
+					display: flex;
+					flex-direction: column;
+					gap: 2px;
+					margin-top: 2px;
+					color: #333333;
+				}
+			}
+
+			.country-dropdown-quantity {
+				font-weight: 400;
+				font-size: 0.7rem;
+				margin-top: 3px;
 			}
 		}
 	}

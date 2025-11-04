@@ -48,5 +48,6 @@
 		display: flex;
 		flex-direction: column;
 		font-family: 'Source Sans Pro';
+		font-size: 0.8rem;
 	}
 </style>
