@@ -56,4 +56,24 @@
 			}
 		}
 	}
+
+	@media (max-width: 75rem) {
+		.container {
+			width: 300px;
+
+			.legend {
+				margin-bottom: 2px;
+			}
+		}
+	}
+
+	@media (max-width: 75rem) {
+		.container {
+			.shades {
+				.shade {
+					height: 10px;
+				}
+			}
+		}
+	}
 </style>

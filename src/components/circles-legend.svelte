@@ -61,4 +61,10 @@
 			border: 1px solid white;
 		}
 	}
+
+	@media (max-width: 50rem) {
+		.container {
+			width: 200px;
+		}
+	}
 </style>

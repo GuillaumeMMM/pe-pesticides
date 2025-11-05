@@ -50,4 +50,10 @@
 		font-family: 'Source Sans Pro';
 		font-size: 0.8rem;
 	}
+
+	@media (max-width: 50rem) {
+		.container {
+			font-size: 0.6rem;
+		}
+	}
 </style>

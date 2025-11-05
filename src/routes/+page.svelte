@@ -16,12 +16,15 @@
 	import Sources from '../components/sources.svelte';
 	import CirclesLegend from '../components/circles-legend.svelte';
 	import { allImports } from '../data/all_imports';
+	import { MediaQuery } from 'svelte/reactivity';
 
 	let chartEl: HTMLDivElement | null = $state(null);
 	let chartRect: DOMRect | undefined = $derived(
 		(chartEl as HTMLDivElement | null)?.getBoundingClientRect()
 	);
 	let openedCountry: string | undefined = $state(undefined);
+
+	const smallScreen = new MediaQuery('max-width: 50rem');
 
 	const minImport = Math.min(...Object.values(importsFromEU));
 	const maxImport = Math.max(...Object.values(importsFromEU));
@@ -45,7 +48,10 @@
 	const maxExport = 50000000;
 	const exportQuantityColorScale = d3.scaleLinear([minExport, maxExport], ['#def6fa', '#006397']);
 
-	const importQuantityCircleRadiusScale = d3.scaleSqrt([minImport, maxImport], [0, 25]);
+	const importQuantityCircleRadiusScale = d3.scaleSqrt(
+		[minImport, maxImport],
+		[0, smallScreen.current ? 15 : 25]
+	);
 
 	const render = () => {
 		if (!chartRect?.width || !chartRect?.height) {
@@ -349,7 +355,8 @@
 				const point = projection(centroids[d.properties.brk_a3]);
 				const ref = [536.386821798111, 418.3598427429403];
 				const shiftUp = point[1] > (chartRect?.height || 0) - 100 ? 50 : 0;
-				return ref[0] < point[0] && d.properties.position !== 'left'
+				const isRight = ref[0] < point[0] ? point[0] + 180 < chartRect!.width : point[0] - 180 < 0;
+				return isRight
 					? `translate(${point[0] + 7}, ${point[1] - 12 - shiftUp})`
 					: `translate(${point[0] - 187}, ${point[1] - 12 - shiftUp})`;
 			});
@@ -362,9 +369,6 @@
 			.style('display', 'none')
 			.attr('height', '200px')
 			.html((d) => {
-				const point = projection(centroids[d.properties.brk_a3]);
-				const ref = [536.386821798111, 418.3598427429403];
-
 				const type = importsFromEU[d.properties.brk_a3] ? 'import' : 'export';
 
 				const total = new Intl.NumberFormat('en-US').format(
@@ -396,7 +400,7 @@
 					}, [])
 					.sort((cA, cB) => ((cA.quantity || 0) > (cB.quantity || 0) ? -1 : 1));
 				return `
-					<div class="country-dropdown ${type} ${ref[0] > point[0] || d.properties.position === 'left' ? 'left' : ''}"">
+					<div class="country-dropdown ${type}">
 						<div class="country-dropdown-name">${d.properties.brk_name} <div class="country-dropdown-quantity">${total} ${type === 'import' ? 'imported' : 'exported'} tonnes</div></div>
 						<div class="country-dropdown-stats">
 							<div class="country-dropdown-stats-label">Most ${type === 'import' ? 'imported' : 'exported'} pesticides :</div>
@@ -557,6 +561,14 @@
 		h1 {
 			font-size: 1.5rem;
 		}
+
+		.sources {
+			width: 400px;
+		}
+
+		.color-legend {
+			gap: 0.5rem;
+		}
 	}
 
 	@media (max-width: 50rem) {
@@ -565,7 +577,7 @@
 		}
 
 		h1 {
-			font-size: 1.2rem;
+			font-size: 1rem;
 		}
 
 		.sources {
