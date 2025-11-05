@@ -35,6 +35,7 @@
 		border: none;
 		color: #3e3e3e;
 		outline-color: #3e3e3e;
+		font-size: 0.8rem;
 
 		&:hover {
 			background-color: #dbdada;

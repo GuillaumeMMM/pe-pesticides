@@ -5,7 +5,12 @@
 	import { onMount } from 'svelte';
 	import ColorLegend from '../components/color-legend.svelte';
 	import Sidebar from '../components/sidebar.svelte';
-	import { aggregatedImports, exportsFromEU, importsFromEU } from '../data/aggregated_imports';
+	import {
+		aggregatedImports,
+		exportsFromEU,
+		importsFromEU,
+		relatedCountries
+	} from '../data/aggregated_imports';
 	import { centroids } from '../data/centroids';
 	import * as world from '../data/world.json';
 	import Sources from '../components/sources.svelte';
@@ -154,12 +159,7 @@
 		function highlightCountry(countryCode: string | null) {
 			if (importsFromEU[countryCode || ''] || exportsFromEU[countryCode || '']) {
 				const mainCountry = countryCode;
-				const relatedCountries = aggregatedImports
-					.filter((c) => c.from === countryCode || c.to === countryCode)
-					.map((c) => [c.from, c.to])
-					.flat()
-					.filter((c, i, self) => self.indexOf(c) === i)
-					.filter((c) => c !== countryCode);
+				const linkedCountries = relatedCountries[countryCode || ''];
 
 				//	Reset Backgrounds & stroke
 				d3.selectAll(`.country`).attr('stroke-width', '0.5px');
@@ -181,15 +181,15 @@
 					.filter(`.target-group-${mainCountry}`)
 					.style('opacity', '1');
 
-				d3.select(`.label-${mainCountry}`).style('opacity', '1');
+				d3.select(`.label-${mainCountry}`).style('display', 'block');
 
-				[...relatedCountries, mainCountry].forEach((c) => {
+				[...linkedCountries, mainCountry].forEach((c) => {
 					d3.select(`.country-${c}`).attr('stroke-width', '2px');
 					d3.select(`.country-${c}`).raise().attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
 					d3.select(`.country-${c}`).attr('fill', fillCountry(c)).attr('stroke', strokeCountry(c));
 				});
 			} else {
-				d3.selectAll('.label').style('opacity', '0');
+				d3.selectAll('.label').style('display', 'none');
 
 				d3.selectAll(`.country`).attr('stroke-width', '0.5px');
 				d3.selectAll(`.country`)
@@ -357,9 +357,9 @@
 		labelGroup
 			.append('foreignObject')
 			.attr('class', (d) => `label label-${d.properties.brk_a3}`)
-			.attr('opacity', '0')
 			.attr('pointer-events', 'none')
 			.attr('width', '180px')
+			.style('display', 'none')
 			.attr('height', '200px')
 			.html((d) => {
 				const point = projection(centroids[d.properties.brk_a3]);
