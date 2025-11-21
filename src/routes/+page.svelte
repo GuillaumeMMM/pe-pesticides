@@ -76,42 +76,6 @@
 
 		const defs = svg.append('defs');
 
-		const pattern = defs
-			.append('pattern')
-			.attr('id', 'diagonal-stripes')
-			.attr('patternUnits', 'userSpaceOnUse')
-			.attr('width', 10)
-			.attr('height', 10);
-
-		pattern
-			.append('rect')
-			.attr('x', 0)
-			.attr('y', 0)
-			.attr('width', 10)
-			.attr('height', 10)
-			.attr('fill', 'white');
-
-		pattern
-			.append('path')
-			.attr('d', 'M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2')
-			.attr('fill', 'none')
-			.attr('stroke', '#00000050')
-			.attr('stroke-width', '3px');
-
-		defs
-			.append('mask')
-			.attr('id', 'mask-diagonal-stripes')
-			.attr('x', 0)
-			.attr('y', 0)
-			.attr('width', 1)
-			.attr('height', 1)
-			.append('rect')
-			.attr('x', 0)
-			.attr('y', 0)
-			.attr('width', chartRect?.width + 'px')
-			.attr('height', chartRect?.height + 'px')
-			.attr('fill', 'url(#diagonal-stripes)');
-
 		const radialGradient = defs.append('radialGradient').attr('id', 'radial-gradient');
 		radialGradient.append('stop').attr('offset', '40%').attr('stop-color', 'black');
 		radialGradient.append('stop').attr('offset', '100%').attr('stop-color', 'white');
@@ -229,9 +193,6 @@
 			.attr('class', (d) => `country country-${d.properties.brk_a3}`)
 			.attr('d', pathGenerator as any)
 			.attr('fill', (d) => fillCountry(d.properties.brk_a3))
-			.attr('mask', (d) =>
-				exportsFromEU[d.properties.brk_a3 || ''] ? 'url(#mask-diagonal-stripes)' : 'none'
-			)
 			.attr('stroke', (d) => strokeCountry(null))
 			.attr('stroke-width', '0.5px')
 			.style('cursor', (d) =>

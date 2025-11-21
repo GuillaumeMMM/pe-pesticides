@@ -44,16 +44,6 @@
 				flex-grow: 1;
 				height: 20px;
 			}
-
-			&.exported .shade {
-				background: repeating-linear-gradient(
-					140deg,
-					#ffffff90 0px,
-					#ffffff90 4px,
-					transparent 4px,
-					transparent 8px
-				);
-			}
 		}
 	}
 
