@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { exportsFromEU, importsFromEU } from '../data/aggregated_imports';
 	import { allImports } from '../data/all_imports';
+	import { assets } from '$app/paths';
 
 	let { country, onClose } = $props();
 
@@ -97,10 +98,6 @@
 	onMount(() => {
 		closeEl?.focus();
 	});
-
-	const json = $derived(JSON.stringify(lines));
-	const blob = $derived(new Blob([json], { type: 'application/json' }));
-	const href = $derived(URL.createObjectURL(blob));
 </script>
 
 <div class="container" use:clickOutside={onClose}>
@@ -223,8 +220,8 @@
 			<a
 				type="button"
 				class="download mdf-button"
-				{href}
-				download={`${countryName.split(' ').join('_')}_data.json`}
+				href={`${assets}/data/countries/${type}_${country}.xlsx`}
+				download
 			>
 				<span class="download-icon" aria-hidden="true">
 					<svg
