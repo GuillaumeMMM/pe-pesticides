@@ -12,6 +12,11 @@
 
 	const totalQuantity = $derived(exportsFromEU[country] || importsFromEU[country]);
 
+	function formatQuantityInTonnes(val: number) {
+		const tonnes = val / 1000;
+		return new Intl.NumberFormat('en-US').format(Number(tonnes.toFixed(tonnes > 10 ? 0 : 2)));
+	}
+
 	const lines = $derived(
 		allImports.filter((i) =>
 			type === 'import' ? i.import_country.brk_a3 === country : i.export_country.brk_a3 === country
@@ -26,10 +31,6 @@
 
 	const countryNameInSentence = $derived(
 		`${countriesWithThe.includes(country) ? 'the ' : ''}${countryName}`
-	);
-
-	const chemicalsCount = $derived(
-		lines.map((l) => l.chemical).filter((c, i, self) => self.indexOf(c) === i).length
 	);
 
 	const exportCompanies = $derived(
@@ -72,24 +73,6 @@
 				}
 			}, [])
 			.sort((cA, cB) => ((cA.quantity || 0) > (cB.quantity || 0) ? -1 : 1))
-	);
-
-	const exportCountries = $derived(
-		exportCompanies.reduce((prev: { from: any; quantity: number }[], curr) => {
-			const match = prev.find((e) => e.from.brk_a3 === curr.export_country?.brk_a3);
-			if (match && match.quantity) {
-				match.quantity += curr.quantity || 0;
-				return prev;
-			} else {
-				return [
-					...prev,
-					{
-						quantity: curr.quantity || 0,
-						from: curr.export_country
-					}
-				];
-			}
-		}, [])
 	);
 
 	function clickOutside(element: Element, callbackFunction: Function) {
@@ -151,21 +134,11 @@
 					<div class="separator"></div>
 					<div class="figure-right">
 						<div class="figure-label mdf-muted">
-							Tonnes of pesticides {type === 'export' ? 'exported' : 'imported'} (expected amount)
+							Notified {type === 'export' ? 'exports' : 'imports'} (in tonnes)
 						</div>
 						<div class="figure-value mdf-emphasis">
 							{new Intl.NumberFormat('en-US').format(Math.round(totalQuantity / 1000))}
 						</div>
-					</div>
-				</div>
-
-				<div class="figure">
-					<div class="separator"></div>
-					<div class="figure-right">
-						<div class="figure-label mdf-muted">
-							Different pesticides {type === 'export' ? 'exported' : 'imported'}
-						</div>
-						<div class="figure-value mdf-emphasis">{chemicalsCount}</div>
 					</div>
 				</div>
 			</div>
@@ -201,20 +174,20 @@
 				<div id="tabpanel-1" role="tabpanel" aria-labelledby="tab-1">
 					<div class="table-container">
 						<table class="table">
-							<caption class="mdf-emphasis"
-								>Pesticides {type === 'export' ? 'exported' : 'imported'}</caption
+							<caption class="mdf-emphasis visually-hidden"
+								>Active ingredients {type === 'export' ? 'exported' : 'imported'}</caption
 							>
 							<thead>
 								<tr>
-									<th>Chemical name</th>
-									<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
+									<th>Active ingredient</th>
+									<th>Amount notified for {type === 'export' ? 'export' : 'import'} (in tonnes)</th>
 								</tr>
 							</thead>
 							<tbody>
 								{#each substances as line}
 									<tr>
 										<td>{line.chemical}</td>
-										<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
+										<td>{formatQuantityInTonnes(line.quantity || 0)}</td>
 									</tr>
 								{/each}
 							</tbody>
@@ -225,27 +198,21 @@
 			{#if selectedTab === '2'}
 				<div class="table-container">
 					<table class="table">
-						<caption class="mdf-emphasis"
+						<caption class="mdf-emphasis visually-hidden"
 							>Companies exporting {type === 'export' ? 'from' : 'to'}
 							{countryNameInSentence}</caption
 						>
 						<thead>
 							<tr>
-								<th>Company name</th>
-								{#if type === 'import'}
-									<th>Company home country</th>
-								{/if}
-								<th>Quantity {type === 'export' ? 'exported' : 'imported'} in tonnes</th>
+								<th>Export company</th>
+								<th>Amount notified for {type === 'export' ? 'export' : 'import'} (in tonnes)</th>
 							</tr>
 						</thead>
 						<tbody>
 							{#each exportCompanies as line}
 								<tr>
 									<td>{line.exporter}</td>
-									{#if type === 'import'}
-										<td>{line.export_country?.brk_name}</td>
-									{/if}
-									<td>{new Intl.NumberFormat('en-US').format((line.quantity || 0) / 1000)}</td>
+									<td>{formatQuantityInTonnes(line.quantity || 0)}</td>
 								</tr>
 							{/each}
 						</tbody>
