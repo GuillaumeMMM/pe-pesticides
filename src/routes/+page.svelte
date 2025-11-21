@@ -14,16 +14,12 @@
 	import { centroids } from '../data/centroids';
 	import * as world from '../data/world.json';
 	import Sources from '../components/sources.svelte';
-	import { allImports } from '../data/all_imports';
-	import { MediaQuery } from 'svelte/reactivity';
 
 	let chartEl: HTMLDivElement | null = $state(null);
 	let chartRect: DOMRect | undefined = $derived(
 		(chartEl as HTMLDivElement | null)?.getBoundingClientRect()
 	);
 	let openedCountry: string | undefined = $state(undefined);
-
-	const smallScreen = new MediaQuery('max-width: 50rem');
 
 	const minImport = Math.min(...Object.values(importsFromEU));
 	const maxImport = Math.max(...Object.values(importsFromEU));
@@ -309,39 +305,18 @@
 					)
 				);
 
-				const lines = allImports.filter((i) =>
-					type === 'import'
-						? i.import_country.brk_a3 === d.properties.brk_a3
-						: i.export_country.brk_a3 === d.properties.brk_a3
-				);
-				const pesticides = lines
-					.reduce((prev: Partial<(typeof lines)[0]>[], curr) => {
-						const match = prev.find((e) => e.chemical === curr.chemical);
-						if (match && match.quantity) {
-							match.quantity += curr.quantity;
-							return prev;
-						} else {
-							return [
-								...prev,
-								{
-									quantity: curr.quantity,
-									chemical: curr.chemical
-								}
-							];
-						}
-					}, [])
-					.sort((cA, cB) => ((cA.quantity || 0) > (cB.quantity || 0) ? -1 : 1));
 				return `
 					<div class="country-dropdown ${type}">
-						<div class="country-dropdown-name">${d.properties.brk_name} <div class="country-dropdown-quantity">${total} ${type === 'import' ? 'imported' : 'exported'} tonnes</div></div>
+						<div class="country-dropdown-header">
+							<div class="country-dropdown-name">
+								<div>${d.properties.brk_name}</div>
+								<div class="badge">${type === 'import' ? 'importer' : 'exporter'}</div>
+							</div>
+							<div class="country-dropdown-header-quantity">${total} tonnes</div>
+						</div>
 						<div class="country-dropdown-stats">
-							<div class="country-dropdown-stats-label">Most ${type === 'import' ? 'imported' : 'exported'} pesticides :</div>
-							<p class="country-dropdown-stats-list">${pesticides
-								.slice(0, 3)
-								.map((p) => p.chemical)
-								.join(
-									', '
-								)}${pesticides.length > 3 ? `, and ${pesticides.length - 3} more` : ''}</p>
+						<div><svg xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 0 36 36"><path d="M30.4 17.6c-1.8-1.9-4.2-3.2-6.7-3.7-1.1-.3-2.2-.5-3.3-.6 2.8-3.3 2.3-8.3-1-11.1s-8.3-2.3-11.1 1-2.3 8.3 1 11.1c.6.5 1.2.9 1.8 1.1v2.2l-1.6-1.5a3.74 3.74 0 0 0-5.2 0 3.5 3.5 0 0 0-.1 5l4.6 5.4c.2 1.4.7 2.7 1.4 3.9.5.9 1.2 1.8 1.9 2.5v1.9c0 .6.4 1 1 1h13.6c.5 0 1-.5 1-1v-2.6c1.9-2.3 2.9-5.2 2.9-8.1v-5.8c.1-.4 0-.6-.2-.7zm-22-9.4c0-3.3 2.7-5.9 6-5.8 3.3 0 5.9 2.7 5.8 6 0 1.8-.8 3.4-2.2 4.5v-5a3.4 3.4 0 0 0-3.4-3.2c-1.8-.1-3.4 1.4-3.4 3.2v5.2c-1.7-1-2.7-2.9-2.8-4.9zM28.7 24c.1 2.6-.8 5.1-2.5 7.1-.2.2-.4.4-.4.7v2.1H14.2v-1.4c0-.3-.2-.6-.4-.8-.7-.6-1.3-1.3-1.8-2.2-.6-1-1-2.2-1.2-3.4 0-.2-.1-.4-.2-.6l-4.8-5.7c-.3-.3-.5-.7-.5-1.2 0-.4.2-.9.5-1.2.7-.6 1.7-.6 2.4 0l2.9 2.9v3l1.9-1V7.9c.1-.7.7-1.3 1.5-1.2.7 0 1.4.5 1.4 1.2v11.5l2 .4v-4.6c.1-.1.2-.1.3-.2.7 0 1.4.1 2.1.2v5.1l1.6.3v-5.2l1.2.3c.5.1 1 .3 1.5.5v5l1.6.3v-4.6c.9.4 1.7 1 2.4 1.7l.1 5.4z" class="cursor"/></svg></div>	
+						<div class="country-dropdown-stats-label">Click the country for more info</div>
 						</div>
 					</div>
 				`;
@@ -490,39 +465,58 @@
 				justify-content: flex-end;
 			}
 
-			.country-dropdown-name {
-				font-weight: 600;
+			.country-dropdown-header {
 				border-bottom: 1px solid #006397;
 				padding: 4px 6px;
 				background-color: #00639710;
+
+				.country-dropdown-name {
+					font-weight: 600;
+					display: flex;
+					align-items: center;
+					gap: 5px;
+					flex-wrap: wrap;
+					justify-content: space-between;
+				}
+
+				.badge {
+					font-weight: 400;
+					color: white;
+					background-color: #006397;
+					border-radius: 3px;
+					padding: 1px 4px 2px 4px;
+				}
+
+				.country-dropdown-header-quantity {
+					font-weight: 400;
+					font-size: 0.7rem;
+					margin-top: 3px;
+				}
 			}
 
 			&.import {
 				border-color: #e62d41;
 
-				.country-dropdown-name {
+				.country-dropdown-header {
 					border-color: #e62d41;
 					background-color: #e62d4010;
+				}
+
+				.badge {
+					background-color: #c42535;
 				}
 			}
 
 			.country-dropdown-stats {
 				padding: 4px 6px;
 				font-size: 0.7rem;
-
-				.country-dropdown-stats-list {
-					display: flex;
-					flex-direction: column;
-					gap: 2px;
-					margin-top: 2px;
-					color: #333333;
-				}
+				display: flex;
+				align-items: center;
+				gap: 2px;
 			}
 
-			.country-dropdown-quantity {
-				font-weight: 400;
-				font-size: 0.7rem;
-				margin-top: 3px;
+			.cursor {
+				alignment-baseline: central;
 			}
 		}
 	}

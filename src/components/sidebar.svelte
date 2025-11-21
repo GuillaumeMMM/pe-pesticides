@@ -319,9 +319,9 @@
 			}
 
 			&[aria-selected='true'] {
-				color: #e62d41;
+				color: #c42535;
 				background: #e62d4010;
-				border-bottom: 2px solid #e62d41;
+				border-bottom: 2px solid #c42535;
 			}
 		}
 	}
