@@ -14,7 +14,6 @@
 	import { centroids } from '../data/centroids';
 	import * as world from '../data/world.json';
 	import Sources from '../components/sources.svelte';
-	import CirclesLegend from '../components/circles-legend.svelte';
 	import { allImports } from '../data/all_imports';
 	import { MediaQuery } from 'svelte/reactivity';
 
@@ -425,24 +424,9 @@
 
 <div class="container">
 	<h1>BANNED PESTICIDES NOTIFIED FOR EXPORT FROM THE EU (2024)</h1>
-	<!-- <div class="country-select">
-		<CountrySelect
-			selectCountry={(country: string) => {
-				openedCountry = country;
-			}}
-		/>
-	</div> -->
 
 	<div class="sources">
 		<Sources />
-	</div>
-
-	<!-- <div class="download-data">
-		<DownloadData />
-	</div> -->
-
-	<div class="circles-legend">
-		<CirclesLegend scale={importQuantityCircleRadiusScale} />
 	</div>
 
 	<div bind:this={chartEl} class="chart"></div>
@@ -509,27 +493,12 @@
 		gap: 1rem;
 	}
 
-	.country-select {
-		position: absolute;
-		top: 1rem;
-		right: 1rem;
-		max-width: calc(100% - 2rem);
-		width: 300px;
-	}
-
 	.sources {
 		position: absolute;
 		bottom: 1rem;
 		left: 1rem;
 		max-width: calc(50% - 2rem);
 		width: 500px;
-	}
-
-	.download-data {
-		position: absolute;
-		bottom: 1rem;
-		left: 1rem;
-		max-width: calc(100% - 2rem);
 	}
 
 	.dialog-container {
@@ -546,18 +515,7 @@
 		}
 	}
 
-	.circles-legend {
-		position: absolute;
-		bottom: 1rem;
-		right: 1rem;
-		max-width: calc(100% - 2rem);
-	}
-
 	@media (max-width: 75rem) {
-		.download-data {
-			display: none;
-		}
-
 		h1 {
 			font-size: 1.5rem;
 		}
@@ -572,10 +530,6 @@
 	}
 
 	@media (max-width: 50rem) {
-		.download-data {
-			display: none;
-		}
-
 		h1 {
 			font-size: 1rem;
 		}

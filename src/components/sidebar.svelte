@@ -170,22 +170,6 @@
 				</div>
 			</div>
 
-			<!-- <div class="bars-container">
-				<div class="bars-legend">Countries exporting to {countryNameInSentence}</div>
-				<ul class="bars">
-					{#each exportCountries as country}
-						<li class="bar">
-							<div class="bar-label">{country.from.brk_name}</div>
-							<div class="bar-stick-container">
-								<div class="bar-stick" style:width={`${(100 * country.quantity) / totalQuantity}%`}>
-									{country.quantity}
-								</div>
-							</div>
-						</li>
-					{/each}
-				</ul>
-			</div> -->
-
 			<div role="tablist" class="tablist">
 				<button
 					id="tab-1"
@@ -425,8 +409,7 @@
 		}
 	}
 
-	.table-container,
-	.bars-container {
+	.table-container {
 		margin-top: 1rem;
 	}
 
@@ -451,35 +434,6 @@
 		caption {
 			text-align: left;
 			padding-bottom: 10px;
-		}
-	}
-
-	.bars-legend {
-		padding-bottom: 10px;
-		font-weight: 600;
-	}
-
-	.bars {
-		display: flex;
-		flex-direction: column;
-		gap: 5px;
-
-		.bar {
-			display: flex;
-			align-items: center;
-
-			.bar-stick-container {
-				height: 20px;
-				flex: 1;
-
-				.bar-stick {
-					background-color: #006397;
-				}
-			}
-
-			.bar-label {
-				width: 100px;
-			}
 		}
 	}
 
