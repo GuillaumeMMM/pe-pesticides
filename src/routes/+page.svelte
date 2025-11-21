@@ -325,8 +325,33 @@
 		return svg;
 	};
 
-	onMount(() => {
+	const debounce = (func: Function, delay: number) => {
+		let timer: number;
+
+		return function () {
+			// @ts-expect-error
+			const context = this;
+			const args = arguments;
+			clearTimeout(timer);
+			timer = setTimeout(() => func.apply(context, args), delay);
+		};
+	};
+
+	const setWindowWidth = () => {
+		chartRect = (chartEl as HTMLDivElement | null)?.getBoundingClientRect();
 		render();
+	};
+
+	const debouncedSetWindowWidth = debounce(setWindowWidth, 300);
+
+	onMount(() => {
+		window.addEventListener('resize', debouncedSetWindowWidth);
+
+		render();
+
+		return () => {
+			window.removeEventListener('resize', debouncedSetWindowWidth);
+		};
 	});
 </script>
 
