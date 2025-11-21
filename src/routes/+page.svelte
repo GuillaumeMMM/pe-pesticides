@@ -125,20 +125,27 @@
 				const mainCountry = countryCode;
 				const linkedCountries = relatedCountries[countryCode || ''];
 
+				const isExport = Boolean(exportsFromEU[countryCode || '']);
+
 				//	Reset Backgrounds & stroke
 				d3.selectAll(`.country`).attr('stroke-width', '0.5px');
 				d3.selectAll(`.country`)
 					.attr('fill', fillCountry(null))
 					.attr('stroke', strokeCountry(null));
 
-				container
+				const fromGroup = container
 					.selectAll(`.arrow-group`)
-					.filter(`.arrow-group-from-${mainCountry}`)
-					.style('opacity', '1');
-				container
+					.filter(`.arrow-group-from-${mainCountry}`);
+
+				const toGroup = container
 					.selectAll(`.arrow-group`)
-					.filter(`.arrow-group-to-${mainCountry}`)
-					.style('opacity', '1');
+					.filter(`.arrow-group-to-${mainCountry}`);
+
+				fromGroup.style('opacity', '1');
+				toGroup.style('opacity', '1');
+
+				fromGroup.selectAll('.arrow').style('fill', isExport ? '#0c8bcf50' : '#E62D4190');
+				toGroup.selectAll('.arrow').style('fill', isExport ? '#0c8bcf50' : '#E62D4190');
 
 				container
 					.selectAll(`.target-group`)
