@@ -326,8 +326,8 @@
 					<div class="country-dropdown ${type}">
 						<div class="country-dropdown-header">
 							<div class="country-dropdown-name">
-								<div>${d.properties.brk_name}</div>
-								<div class="badge">${type === 'import' ? 'importer' : 'exporter'}</div>
+								<span>${d.properties.brk_name}</span>
+								<div class="badge"><span>${type === 'import' ? 'importer' : 'exporter'}</span></div>
 							</div>
 							<div class="country-dropdown-header-quantity">${total} tonnes</div>
 						</div>
@@ -515,24 +515,25 @@
 				.country-dropdown-name {
 					font-weight: 600;
 					display: flex;
-					align-items: center;
-					gap: 5px;
-					flex-wrap: wrap;
 					justify-content: space-between;
-				}
+					flex-wrap: wrap;
 
-				.badge {
-					font-weight: 400;
-					color: white;
-					background-color: #006397;
-					border-radius: 3px;
-					padding: 1px 4px 2px 4px;
-				}
+					.badge {
+						font-weight: 400;
+						color: white;
+						background-color: #006397;
+						border-radius: 3px;
+						padding: 2px 4px 2px 4px;
+						font-size: 0.7rem;
+						display: flex;
+						align-items: center;
+					}
 
-				.country-dropdown-header-quantity {
-					font-weight: 400;
-					font-size: 0.7rem;
-					margin-top: 3px;
+					.country-dropdown-header-quantity {
+						font-weight: 400;
+						font-size: 0.7rem;
+						margin-top: 3px;
+					}
 				}
 			}
 
