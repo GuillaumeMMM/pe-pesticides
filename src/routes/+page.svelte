@@ -21,27 +21,40 @@
 	);
 	let openedCountry: string | undefined = $state(undefined);
 
-	const minImport = Math.min(...Object.values(importsFromEU));
-	const maxImport = Math.max(...Object.values(importsFromEU));
-	const split = (maxImport - minImport) / 8;
-	const importQuantityColorScale = d3.scaleLinear(
-		[
-			minImport,
-			minImport + split,
-			minImport + 2 * split,
-			minImport + 3 * split,
-			minImport + 4 * split,
-			minImport + 5 * split,
-			minImport + 6 * split,
-			minImport + 7 * split,
-			maxImport
-		],
-		['#FDDFD5', '#F8C3B3', '#F5A898', '#F28D81', '#F0756D', '#EC6762', '#E94C53', '#E62C41']
-	);
+	const importColors = [
+		'#FDDFD5',
+		'#F8C3B3',
+		'#F5A898',
+		'#F28D81',
+		'#F0756D',
+		'#EC6762',
+		'#E94C53',
+		'#E62C41'
+	];
 
-	const minExport = Math.min(...Object.values(exportsFromEU));
-	const maxExport = 50000000;
-	const exportQuantityColorScale = d3.scaleLinear([minExport, maxExport], ['#def6fa', '#006397']);
+	const exportColors = [
+		'#DEF6FA',
+		'#C3E4EE',
+		'#A7D2E2',
+		'#A0CEDF',
+		'#99C9DC',
+		'#8BC0D6',
+		'#62A4C3',
+		'#006397'
+	];
+
+	const importThresholds = [0, 100, 500, 1000, 2000, 5000, 10000, 20000].map((d) => d * 1000);
+
+	const exportThresholds = [0, 100, 500, 1000, 5000, 10000, 20000, 40000].map((d) => d * 1000);
+
+	function getImportExportColor(value: number, thresholds: number[], colors: string[]) {
+		for (let i = thresholds.length - 1; i >= 0; i--) {
+			if (value > thresholds[i]) {
+				return colors[i];
+			}
+		}
+		return colors[0];
+	}
 
 	const render = () => {
 		if (!chartRect?.width || !chartRect?.height) {
@@ -178,14 +191,18 @@
 				return 'white';
 			}
 
-			return importQuantityColorScale(importQuantity) || exportQuantityColorScale(exportQuantity);
+			return getImportExportColor(
+				importQuantity || exportQuantity,
+				importQuantity ? importThresholds : exportThresholds,
+				importQuantity ? importColors : exportColors
+			);
 		}
 
 		function strokeCountry(countryCode: string | null) {
 			return importsFromEU[countryCode || '']
-				? importQuantityColorScale(maxImport)
+				? importColors[importColors.length - 1]
 				: exportsFromEU[countryCode || '']
-					? exportQuantityColorScale(maxExport)
+					? exportColors[exportColors.length - 1]
 					: 'grey';
 		}
 
@@ -365,9 +382,9 @@
 	<div bind:this={chartEl} class="chart"></div>
 
 	<div class="color-legend" aria-hidden="true">
-		<ColorLegend scale={importQuantityColorScale} type="imported" maxDisplayed={20000} />
+		<ColorLegend colors={importColors} thresholds={importThresholds} type="import" />
 
-		<ColorLegend scale={exportQuantityColorScale} type="exported" maxDisplayed={50000} />
+		<ColorLegend colors={exportColors} thresholds={exportThresholds} type="export" />
 	</div>
 </div>
 
@@ -423,7 +440,7 @@
 		max-width: calc(50% - 2rem);
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 2rem;
 	}
 
 	.sources {
@@ -458,7 +475,7 @@
 		}
 
 		.color-legend {
-			gap: 0.5rem;
+			gap: 1.5rem;
 		}
 	}
 

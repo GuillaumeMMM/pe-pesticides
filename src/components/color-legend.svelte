@@ -1,38 +1,32 @@
 <script lang="ts">
-	let { scale, type, maxDisplayed } = $props();
-
-	const count = 8;
-
-	const splitLength = $derived(scale.domain()[scale.domain().length - 1] / count);
+	let { colors, type, thresholds } = $props();
 </script>
 
 <div class="container">
 	<div class="legend">
-		<div>
-			{`${new Intl.NumberFormat('en-US').format(maxDisplayed || scale.domain()[scale.domain().length - 1] / 1000)} ${type} tonnes of chemicals`}
-		</div>
-
-		<div>0</div>
+		<span class="mdf-emphasis"
+			>{type === 'import' ? 'Imports' : 'Exports'} of banned pesticides (in tonnes)</span
+		>
 	</div>
 	<div class={`shades ${type}`}>
-		{#each Array(count)
-			.fill(null)
-			.map((_, i) => (i === 0 ? scale(0) : scale((i + 1) * splitLength)))
-			.reverse() as color}
-			<div style:background-color={color} class="shade"></div>
+		{#each [...colors].reverse() as color, index}
+			<div class="shade-container">
+				<div class="tick">
+					{new Intl.NumberFormat('en-US').format(thresholds[thresholds.length - 1 - index] / 1000)}
+				</div>
+				<div style:background-color={color} class="shade"></div>
+			</div>
 		{/each}
 	</div>
 </div>
 
 <style>
 	.container {
-		width: 400px;
+		width: 450px;
 		max-width: 100%;
 
 		.legend {
 			width: 100%;
-			display: flex;
-			justify-content: space-between;
 			margin-bottom: 5px;
 		}
 
@@ -43,6 +37,17 @@
 			.shade {
 				flex-grow: 1;
 				height: 20px;
+			}
+
+			.shade-container {
+				flex-grow: 1;
+				position: relative;
+			}
+
+			.tick {
+				position: absolute;
+				bottom: calc(-2px - 0.8rem);
+				right: 0;
 			}
 		}
 	}
