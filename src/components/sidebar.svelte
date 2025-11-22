@@ -12,6 +12,7 @@
 	const type = $derived(exportsFromEU[country] ? 'export' : 'import');
 
 	const totalQuantity = $derived(exportsFromEU[country] || importsFromEU[country]);
+	const totalQuantityInTonnes = totalQuantity / 1000;
 
 	function formatQuantityInTonnes(val: number) {
 		const tonnes = val / 1000;
@@ -134,7 +135,11 @@
 							Notified {type === 'export' ? 'exports' : 'imports'} (in tonnes)
 						</div>
 						<div class="figure-value mdf-emphasis">
-							{new Intl.NumberFormat('en-US').format(Math.round(totalQuantity / 1000))}
+							{new Intl.NumberFormat('en-US').format(
+								totalQuantityInTonnes > 10
+									? Math.round(totalQuantityInTonnes)
+									: totalQuantityInTonnes
+							)}
 						</div>
 					</div>
 				</div>
