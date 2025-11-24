@@ -366,6 +366,10 @@
 	}}
 />
 
+<svelte:head>
+	<title>Banned pesticides notified for export from the EU</title>
+</svelte:head>
+
 <style>
 	.container {
 		flex: 1;
