@@ -21,6 +21,7 @@
 		(chartEl as HTMLDivElement | null)?.getBoundingClientRect()
 	);
 	let openedCountry: string | undefined = $state(undefined);
+	let zoomLevel: number = $state(1);
 
 	const importColors = [
 		'#FDDFD5',
@@ -161,6 +162,8 @@
 					.style('pointer-events', 'none')
 					.style('fill', isExport ? '#0c8bcf50' : '#E62D4190');
 
+				const labelWidth = zoomLevel > 1.5 ? 120 : 180;
+
 				//	Draw label group
 				const labelGroup = container
 					.append('g')
@@ -170,17 +173,19 @@
 						const ref = [536.386821798111, 418.3598427429403];
 						const shiftUp = point[1] > (chartRect?.height || 0) - 100 ? 50 : 0;
 						const isRight =
-							ref[0] < point[0] ? point[0] + 180 < chartRect!.width : point[0] - 180 < 0;
+							ref[0] < point[0]
+								? point[0] + labelWidth < chartRect!.width
+								: point[0] - labelWidth < 0;
 						return isRight
 							? `translate(${point[0] + 7}, ${point[1] - 12 - shiftUp})`
-							: `translate(${point[0] - 187}, ${point[1] - 12 - shiftUp})`;
+							: `translate(${point[0] - labelWidth - 7}, ${point[1] - 12 - shiftUp})`;
 					});
 
 				labelGroup
 					.append('foreignObject')
 					.attr('class', `label`)
 					.attr('pointer-events', 'none')
-					.attr('width', '180px')
+					.attr('width', `${labelWidth}px`)
 					.attr('height', '200px')
 					.html(() => {
 						const type = importsFromEU[mainCountry] ? 'import' : 'export';
@@ -289,6 +294,7 @@
 	function initZoomOnSvg(svg: any) {
 		function zoomed({ transform }: { transform: d3.ZoomTransform }) {
 			svg?.select('.container').attr('transform', transform as any);
+			zoomLevel = transform.k;
 		}
 
 		const zoom = d3
@@ -330,7 +336,7 @@
 		<Sources />
 	</div>
 
-	<div bind:this={chartEl} class="chart"></div>
+	<div bind:this={chartEl} class={`chart ${zoomLevel > 1.5 ? 'zoomed-in' : ''}`}></div>
 
 	<div class="color-legend" aria-hidden="true">
 		<ColorLegend colors={importColors} thresholds={importThresholds} type="import" />
@@ -511,6 +517,22 @@
 
 			.cursor {
 				alignment-baseline: central;
+			}
+		}
+
+		.zoomed-in {
+			.country-dropdown {
+				font-size: 0.6rem;
+
+				.country-dropdown-header {
+					.country-dropdown-name .badge {
+						font-size: 0.4rem;
+					}
+				}
+
+				.country-dropdown-stats {
+					font-size: 0.4rem;
+				}
 			}
 		}
 	}

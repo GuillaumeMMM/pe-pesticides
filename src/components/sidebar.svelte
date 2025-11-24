@@ -12,7 +12,7 @@
 	const type = $derived(exportsFromEU[country] ? 'export' : 'import');
 
 	const totalQuantity = $derived(exportsFromEU[country] || importsFromEU[country]);
-	const totalQuantityInTonnes = totalQuantity / 1000;
+	const totalQuantityInTonnes = $derived(totalQuantity / 1000);
 
 	function formatQuantityInTonnes(val: number) {
 		const tonnes = val / 1000;
