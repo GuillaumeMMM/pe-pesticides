@@ -12,7 +12,9 @@
 		{#each [...colors].reverse() as color, index}
 			<div class="shade-container">
 				<div class="tick">
-					{new Intl.NumberFormat('en-US').format(thresholds[thresholds.length - 1 - index] / 1000)}
+					>&nbsp;{new Intl.NumberFormat('en-US').format(
+						thresholds[thresholds.length - 1 - index] / 1000
+					)}
 				</div>
 				<div style:background-color={color} class="shade"></div>
 			</div>
@@ -55,6 +57,7 @@
 	@media (max-width: 75rem) {
 		.container {
 			width: 300px;
+			font-size: 0.6rem;
 
 			.legend {
 				margin-bottom: 2px;

@@ -45,9 +45,7 @@
 		'#006397'
 	];
 
-	const importThresholds = [0, 100, 500, 1000, 2000, 5000, 10000, 20000].map((d) => d * 1000);
-
-	const exportThresholds = [0, 100, 500, 1000, 5000, 10000, 20000, 40000].map((d) => d * 1000);
+	const thresholds = [0, 100, 500, 1000, 2000, 5000, 10000, 20000].map((d) => d * 1000);
 
 	function getImportExportColor(value: number, thresholds: number[], colors: string[]) {
 		for (let i = thresholds.length - 1; i >= 0; i--) {
@@ -235,7 +233,7 @@
 
 			return getImportExportColor(
 				importQuantity || exportQuantity,
-				importQuantity ? importThresholds : exportThresholds,
+				thresholds,
 				importQuantity ? importColors : exportColors
 			);
 		}
@@ -339,9 +337,9 @@
 	<div bind:this={chartEl} class={`chart ${zoomLevel > 1.5 ? 'zoomed-in' : ''}`}></div>
 
 	<div class="color-legend" aria-hidden="true">
-		<ColorLegend colors={importColors} thresholds={importThresholds} type="import" />
+		<ColorLegend colors={importColors} {thresholds} type="import" />
 
-		<ColorLegend colors={exportColors} thresholds={exportThresholds} type="export" />
+		<ColorLegend colors={exportColors} {thresholds} type="export" />
 	</div>
 </div>
 

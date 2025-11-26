@@ -103,7 +103,12 @@
 
 <div class="container" use:clickOutside={onClose}>
 	<div class={`panel ${type}`}>
-		<h1 class="mdf-title2">{countryName}</h1>
+		<h1 class="mdf-title2 name">
+			{countryName}
+			<div class="badge-container">
+				<div class="badge">{type === 'import' ? 'importer' : 'exporter'}</div>
+			</div>
+		</h1>
 
 		<button
 			type="button"
@@ -131,9 +136,7 @@
 				<div class="figure">
 					<div class="separator"></div>
 					<div class="figure-right">
-						<div class="figure-label mdf-muted">
-							Notified {type === 'export' ? 'exports' : 'imports'} (in tonnes)
-						</div>
+						<div class="figure-label mdf-muted">Amount notified (in tonnes)</div>
 						<div class="figure-value mdf-emphasis">
 							{new Intl.NumberFormat('en-US').format(
 								totalQuantityInTonnes > 10
@@ -182,7 +185,7 @@
 							<thead>
 								<tr>
 									<th>Active ingredient</th>
-									<th>Amount notified for {type === 'export' ? 'export' : 'import'} (in tonnes)</th>
+									<th>Amount notified (in tonnes)</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -206,8 +209,8 @@
 						>
 						<thead>
 							<tr>
-								<th>Export company</th>
-								<th>Amount notified for {type === 'export' ? 'export' : 'import'} (in tonnes)</th>
+								<th>Exporting company</th>
+								<th>Amount notified (in tonnes)</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -293,6 +296,31 @@
 
 	.content {
 		margin-top: 1rem;
+	}
+
+	.name {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.badge-container {
+		display: flex;
+		align-items: center;
+		margin-top: 5px;
+	}
+
+	.badge {
+		font-weight: 400;
+		color: white;
+		background-color: #c42535;
+		border-radius: 3px;
+		padding: 3px 5px;
+		font-size: 1rem;
+		align-items: center;
+	}
+
+	.export .badge {
+		background-color: #006397;
 	}
 
 	.tablist {
