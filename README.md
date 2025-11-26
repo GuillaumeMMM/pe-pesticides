@@ -1,38 +1,23 @@
-# sv
+# Pesticides world map data visualization
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
+## Run the project
 
 ```bash
-# create a new project in the current directory
-npx sv create
+# install dependencies
+yarn install
 
-# create a new project in my-app
-npx sv create my-app
+# run the dev live preview
+yarn run dev
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Create a static build
 
 ```bash
-npm run dev
+# the built project will be in /build
+yarn run build
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# preview the static build locally
+cd /build
+npx http-server
+
 ```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
