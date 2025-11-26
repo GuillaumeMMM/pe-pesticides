@@ -22,6 +22,7 @@
 	);
 	let openedCountry: string | undefined = $state(undefined);
 	let zoomLevel: number = $state(1);
+	let skipLinkHidden: boolean = $state(true);
 
 	const importColors = [
 		'#FDDFD5',
@@ -79,7 +80,7 @@
 		const svg = d3
 			.select(chartEl)
 			.append('svg')
-			.attr('title', 'Map')
+			.attr('title', 'World map of the banned pesticides notified for export from the EU in 2024')
 			.attr('width', chartRect?.width + 'px')
 			.attr('height', (chartRect?.height || 0) - 5 + 'px');
 
@@ -274,6 +275,46 @@
 				highlightCountry(null);
 			});
 
+		countriesGroup
+			.selectAll('g.country-button')
+			.data(
+				world.features.filter(
+					(d) =>
+						importsFromEU[d.properties.brk_a3 || ''] || exportsFromEU[d.properties.brk_a3 || '']
+				)
+			)
+			.join('g')
+			.attr('class', 'country-button visually-hidden')
+			.append('foreignObject')
+			.attr('width', `0px`)
+			.attr('height', '0px')
+			.on('focusin', (e, d) => {
+				highlightCountry(d.properties.brk_a3);
+			})
+			.on('focusout', (e, d) => {
+				highlightCountry(null);
+			})
+			.on('click', (e, d) => {
+				setTimeout(() => {
+					openedCountry = d.properties.brk_a3;
+				});
+			})
+			.html((d) => {
+				const type = importsFromEU[d.properties.brk_a3] ? 'importer' : 'exporter';
+				const quantityInTonnes =
+					(importsFromEU[d.properties.brk_a3] || exportsFromEU[d.properties.brk_a3]) / 1000;
+				const total = new Intl.NumberFormat('en-US').format(
+					quantityInTonnes > 10 ? Math.round(quantityInTonnes) : quantityInTonnes
+				);
+				return `
+					<button type="button">
+						${countries.find((c) => c.brk_a3 === d.properties.brk_a3)?.brk_name}
+						<span>${type} country</span>
+						<span>${total} tonnes notified for ${type === 'importer' ? 'import' : 'export'}</span>
+					</button>
+				`;
+			});
+
 		return svg;
 	};
 
@@ -330,11 +371,22 @@
 <div class="container">
 	<h1>BANNED PESTICIDES NOTIFIED FOR EXPORT FROM THE EU (2024)</h1>
 
-	<div class="sources">
-		<Sources />
+	<div>
+		<a
+			class={`skip-link mdf-link ${skipLinkHidden ? 'visually-hidden' : ''}`}
+			href="#download-map-data"
+			onfocus={() => {
+				skipLinkHidden = false;
+			}}
+			onblur={() => (skipLinkHidden = true)}>Skip map content</a
+		>
 	</div>
 
 	<div bind:this={chartEl} class={`chart ${zoomLevel > 1.5 ? 'zoomed-in' : ''}`}></div>
+
+	<div class="sources">
+		<Sources />
+	</div>
 
 	<div class="color-legend" aria-hidden="true">
 		<ColorLegend colors={importColors} {thresholds} type="import" />
@@ -390,6 +442,15 @@
 		font-weight: 600;
 		font-family: Radikal-Bold;
 		color: #843027;
+	}
+
+	.skip-link {
+		display: inline-block;
+		background-color: #e0e0e0;
+		border: none;
+		color: #3e3e3e;
+		outline-color: #3e3e3e;
+		text-transform: none;
 	}
 
 	.color-legend {

@@ -6,6 +6,7 @@
 	href={`${assets}/data/2024_EU_banned_pesticide_exports.xlsx`}
 	download
 	class="mdf-button download"
+	id="download-map-data"
 >
 	<span class="download-icon" aria-hidden="true">
 		<svg

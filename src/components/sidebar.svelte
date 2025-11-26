@@ -436,7 +436,7 @@
 
 	.download {
 		margin-top: 1rem;
-		background-color: #e62d41;
+		background-color: #c42535;
 		border-color: #9a2733;
 		outline-color: #9a2733;
 		display: inline-flex;
