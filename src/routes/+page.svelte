@@ -369,7 +369,7 @@
 </script>
 
 <div class="container">
-	<h1>BANNED PESTICIDES NOTIFIED FOR EXPORT FROM THE EU (2024)</h1>
+	<h2>BANNED PESTICIDES NOTIFIED FOR EXPORT FROM THE EU (2024)</h2>
 
 	<div>
 		<a
@@ -433,7 +433,7 @@
 		}
 	}
 
-	h1 {
+	h2 {
 		text-align: center;
 		font-size: 1.8rem;
 		letter-spacing: 2px;
@@ -486,7 +486,7 @@
 	}
 
 	@media (max-width: 75rem) {
-		h1 {
+		h2 {
 			font-size: 1.5rem;
 		}
 
@@ -500,7 +500,7 @@
 	}
 
 	@media (max-width: 50rem) {
-		h1 {
+		h2 {
 			font-size: 1rem;
 		}
 
