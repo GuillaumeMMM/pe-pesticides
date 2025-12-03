@@ -69,7 +69,7 @@
 		.container {
 			.shades {
 				.shade {
-					height: 10px;
+					height: 15px;
 				}
 			}
 		}

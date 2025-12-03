@@ -502,6 +502,7 @@
 	@media (max-width: 50rem) {
 		h1 {
 			font-size: 1rem;
+			padding: 1rem 5px;
 		}
 
 		.sources {
@@ -510,6 +511,12 @@
 
 		.color-legend {
 			max-width: calc(100% - 2rem);
+		}
+	}
+
+	@media (max-width: 30rem) {
+		.color-legend {
+			margin-top: 2rem;
 		}
 	}
 
