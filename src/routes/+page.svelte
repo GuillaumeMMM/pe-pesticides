@@ -105,7 +105,7 @@
 
 				[...linkedCountries, mainCountry].forEach((c) => {
 					d3.select(`.country-${c}`).attr('stroke-width', '1px');
-					d3.select(`.country-${c}`).raise().attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
+					d3.select(`.country-${c}`).attr('filter', 'drop-shadow(0px 0px 1px #E62D4150)');
 					d3.select(`.country-${c}`).attr('fill', fillCountry(c)).attr('stroke', strokeCountry(c));
 				});
 
